@@ -31,7 +31,7 @@ Vanish-OG ships the same Bukkit-facing API package as SuperVanish: `de.myzelyam.
 
 ### Main entry point
 
-Use [`VanishAPI`](/home/notalexnoyle/eclipse-workspace/Vanish-OG/src/main/java/de/myzelyam/api/vanish/VanishAPI.java) for all direct integrations.
+Use [`VanishAPI`](src/main/java/de/myzelyam/api/vanish/VanishAPI.java) for all direct integrations.
 
 ```java
 import de.myzelyam.api.vanish.VanishAPI;
@@ -129,15 +129,15 @@ The API exposes the following Bukkit events in `de.myzelyam.api.vanish`:
 
 All of these are normal Bukkit events and should be handled on the main server thread. Do not assume they fire asynchronously.
 
-- [`PlayerHideEvent`](/home/notalexnoyle/eclipse-workspace/Vanish-OG/src/main/java/de/myzelyam/api/vanish/PlayerHideEvent.java)
+- [`PlayerHideEvent`](src/main/java/de/myzelyam/api/vanish/PlayerHideEvent.java)
   Fired before a player is hidden. Cancellable. Includes `isSilent()` / `setSilent(boolean)`.
-- [`PostPlayerHideEvent`](/home/notalexnoyle/eclipse-workspace/Vanish-OG/src/main/java/de/myzelyam/api/vanish/PostPlayerHideEvent.java)
+- [`PostPlayerHideEvent`](src/main/java/de/myzelyam/api/vanish/PostPlayerHideEvent.java)
   Fired after a player has been hidden. Not cancellable. Includes `isSilent()`.
-- [`PlayerShowEvent`](/home/notalexnoyle/eclipse-workspace/Vanish-OG/src/main/java/de/myzelyam/api/vanish/PlayerShowEvent.java)
+- [`PlayerShowEvent`](src/main/java/de/myzelyam/api/vanish/PlayerShowEvent.java)
   Fired before a player is shown. Cancellable. Includes `isSilent()` / `setSilent(boolean)`.
-- [`PostPlayerShowEvent`](/home/notalexnoyle/eclipse-workspace/Vanish-OG/src/main/java/de/myzelyam/api/vanish/PostPlayerShowEvent.java)
+- [`PostPlayerShowEvent`](src/main/java/de/myzelyam/api/vanish/PostPlayerShowEvent.java)
   Fired after a player has been shown. Not cancellable. Includes `isSilent()`.
-- [`PlayerVanishStateChangeEvent`](/home/notalexnoyle/eclipse-workspace/Vanish-OG/src/main/java/de/myzelyam/api/vanish/PlayerVanishStateChangeEvent.java)
+- [`PlayerVanishStateChangeEvent`](src/main/java/de/myzelyam/api/vanish/PlayerVanishStateChangeEvent.java)
   Fired when persisted vanish state changes for a UUID. Cancellable. Exposes `isVanishing()`, `getUUID()`, `getName()`, and `getCause()`.
 
 ### Example listener
