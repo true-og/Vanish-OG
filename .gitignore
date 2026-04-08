@@ -1,6 +1,12 @@
 *.class
 target/
 out/
+build/
+.gradle/
+bin/
+.classpath
+.project
+.checkstyle
 
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
@@ -9,7 +15,6 @@ out/
 .idea/
 *.eml
 *.iml
-
 
 # Eclipse files
 .settings

@@ -14,8 +14,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.Plugin;
 
 /**
- * Represents a hook into a plugin to support its functionality or make it support SuperVanish's
- * functionality
+ * Represents a hook into a plugin to support its functionality or make it
+ * support SuperVanish's functionality
  */
 public abstract class PluginHook implements Listener {
 
@@ -23,20 +23,29 @@ public abstract class PluginHook implements Listener {
     protected Plugin plugin;
 
     public PluginHook(SuperVanish superVanish) {
+
         this.superVanish = superVanish;
+
     }
 
     public void onPluginEnable(Plugin plugin) {
+
     }
 
     public void onPluginDisable(Plugin plugin) {
+
     }
 
     public Plugin getPlugin() {
+
         return plugin;
+
     }
 
     void setPlugin(Plugin plugin) {
+
         this.plugin = plugin;
+
     }
+
 }

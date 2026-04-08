@@ -8,169 +8,297 @@
 
 package de.myzelyam.supervanish;
 
-import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
-
-import de.myzelyam.supervanish.hooks.PlaceholderAPIHook;
-import de.myzelyam.supervanish.utils.Validation;
-
-import net.milkbowl.vault.chat.Chat;
-import net.milkbowl.vault.permission.Permission;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.RegisteredServiceProvider;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.earth2me.essentials.Essentials;
+import com.earth2me.essentials.User;
 
-import be.maximvdw.placeholderapi.PlaceholderAPI;
+import de.myzelyam.supervanish.utils.Validation;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.LuckPermsProvider;
+import net.luckperms.api.cacheddata.CachedMetaData;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class PlaceholderConverter {
 
-    private final SuperVanish plugin;
+    private static final LegacyComponentSerializer LEGACY_SERIALIZER = LegacyComponentSerializer.legacySection();
 
     public PlaceholderConverter(SuperVanish plugin) {
-        this.plugin = plugin;
+
     }
 
     public String replacePlaceholders(String msg, Object... additionalPlayerInfo) {
-        Validation.checkIsTrue("Failed to replace variables (Illegal arguments)",
-                msg != null, additionalPlayerInfo != null);
-        //noinspection ConstantConditions
-        Validation.checkIsTrue(additionalPlayerInfo.length > 0);
-        // check vararg
-        final List<Object> additionalPlayerInfoList = Arrays
-                .asList(additionalPlayerInfo);
-        Object unspecifiedPlayer = additionalPlayerInfoList.get(0);
-        String unspecifiedOtherPlayersName = null;
-        if (additionalPlayerInfoList.size() > 1
-                && (additionalPlayerInfoList.get(1) instanceof String
-                || additionalPlayerInfoList.get(1) instanceof Player)) {
-            unspecifiedOtherPlayersName = (String) (additionalPlayerInfoList
-                    .get(1) instanceof Player
-                    ? ((Player) additionalPlayerInfoList.get(1)).getName()
-                    : additionalPlayerInfoList.get(1));
-        }
-        //noinspection ConstantConditions
-        msg = msg.replace("\\n", "\n");
-        // replace sender specific variables
-        replaceVariables:
-        {
-            if (unspecifiedPlayer instanceof OfflinePlayer
-                    && !(unspecifiedPlayer instanceof Player)) {
-                // offline player
-                OfflinePlayer specifiedPlayer = (OfflinePlayer) unspecifiedPlayer;
-                // MVdWPlaceholderAPI
-                if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
-                        && plugin.getSettings().getBoolean("HookOptions.EnableMVdWPlaceholderAPIHook", true)) {
-                    String replaced = PlaceholderAPI.replacePlaceholders(specifiedPlayer, msg);
-                    msg = replaced == null ? msg : replaced;
-                }
-                // replace essentials nick names
-                if (Bukkit.getPluginManager()
-                        .getPlugin("Essentials") != null) {
-                    msg = msg.replace("%nick%", specifiedPlayer.getName());
-                }
-                // replace general variables
-                msg = msg.replace("%d%", specifiedPlayer.getName())
-                        .replace("%p%", specifiedPlayer.getName())
-                        .replace("%tab%", specifiedPlayer.getName());
-                // replace other player's name if possible
-                msg = msg.replace("%other%", unspecifiedOtherPlayersName != null
-                        ? unspecifiedOtherPlayersName : "UNKNOWN");
-                break replaceVariables;
-            }
-            if (unspecifiedPlayer instanceof Player) {
-                // player
-                Player specifiedPlayer = (Player) unspecifiedPlayer;
-                // PlaceholderAPI
-                if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")
-                        && plugin.getSettings().getBoolean("HookOptions.EnablePlaceholderAPIHook", true)) {
-                    String replaced = PlaceholderAPIHook.translatePlaceholders(msg, specifiedPlayer);
-                    //noinspection ConstantConditions
-                    msg = replaced == null ? msg : replaced;
-                }
-                // MVdWPlaceholderAPI
-                if (Bukkit.getPluginManager().isPluginEnabled("MVdWPlaceholderAPI")
-                        && plugin.getSettings().getBoolean("HookOptions.EnableMVdWPlaceholderAPIHook", true)) {
-                    String replaced = PlaceholderAPI.replacePlaceholders(specifiedPlayer, msg);
-                    msg = replaced == null ? msg : replaced;
-                }
-                // replace essentials nick names
-                if (Bukkit.getPluginManager().getPlugin("Essentials") != null) {
-                    Essentials ess = (Essentials) Bukkit.getServer()
-                            .getPluginManager().getPlugin("Essentials");
-                    User u = ess.getUser(specifiedPlayer);
-                    if (u != null)
-                        if (u.getNickname() != null)
-                            msg = msg.replace("%nick%", u.getNickname());
-                }
-                // replace vault info
-                if (Bukkit.getPluginManager().getPlugin("Vault") != null) {
-                    RegisteredServiceProvider<Permission> permService = plugin.getServer()
-                            .getServicesManager().getRegistration(Permission.class);
-                    RegisteredServiceProvider<Chat> chatService = plugin.getServer()
-                            .getServicesManager().getRegistration(Chat.class);
-                    Permission permAPI = permService != null ? permService.getProvider() : null;
-                    Chat chatAPI = chatService != null ? chatService.getProvider() : null;
-                    try {
-                        if (permAPI != null) {
-                            String group = permAPI.getPrimaryGroup(specifiedPlayer);
-                            if (group != null)
-                                msg = msg.replace("%group%", group);
-                        }
-                        if (chatAPI != null) {
-                            String prefix = chatAPI.getPlayerPrefix(specifiedPlayer);
-                            String suffix = chatAPI.getPlayerSuffix(specifiedPlayer);
-                            if (prefix != null) {
-                                msg = msg.replace("%prefix%", prefix);
-                            }
-                            if (suffix != null) {
-                                msg = msg.replace("%suffix%", suffix);
-                            }
-                        }
-                    } catch (UnsupportedOperationException ignored) {
-                    }
-                }
-                // replace general variables
-                msg = msg.replace("%d%", "" + specifiedPlayer.getDisplayName())
-                        .replace("%p%", "" + specifiedPlayer.getName())
-                        .replace("%tab%",
-                                "" + specifiedPlayer.getPlayerListName());
-                // replace other player's name if possible
-                msg = msg.replace("%other%", unspecifiedOtherPlayersName != null
-                        ? unspecifiedOtherPlayersName : "UNKNOWN");
 
-                break replaceVariables;
-            }
-            if (unspecifiedPlayer instanceof CommandSender) {
-                // console
-                // replace general variables
-                msg = msg.replace("%d%", "Console").replace("%p%", "Console")
-                        .replace("%tab%", "Console");
-                // replace other player's name if possible
-                msg = msg.replace("%other%", unspecifiedOtherPlayersName != null
-                        ? unspecifiedOtherPlayersName : "UNKNOWN");
-            }
-        }
-        // convert color codes
-        if (plugin.getVersionUtil().isOneDotXOrHigher(16)) {
-            Pattern pattern = Pattern.compile("\\{?&?#[a-fA-F0-9]{6}\\}?");
-            Matcher matcher = pattern.matcher(msg);
+        return LEGACY_SERIALIZER.serialize(expandPlaceholders(msg, additionalPlayerInfo));
 
-            while (matcher.find()) {
-                String color = msg.substring(matcher.start(), matcher.end());
-                msg = msg.replace(color, net.md_5.bungee.api.ChatColor.of(color.replace("&", "").replace("{", "").replace("}", "")) + "");
-                matcher = pattern.matcher(msg);
-            }
-        }
-        msg = ChatColor.translateAlternateColorCodes('&', msg);
-        return msg;
     }
+
+    public Component expandPlaceholders(String msg, Object... additionalPlayerInfo) {
+
+        return expandPlaceholders(null, msg, additionalPlayerInfo);
+
+    }
+
+    public Component expandPlaceholders(CommandSender recipient, String msg, Object... additionalPlayerInfo) {
+
+        Validation.checkNotNull("Failed to replace variables (Illegal arguments)", msg, additionalPlayerInfo);
+        final PlaceholderContext context = parseContext(additionalPlayerInfo);
+        final String preparedMessage = applyInlinePlaceholders(msg.replace("\\n", "\n"), context);
+
+        if (recipient instanceof Player player) {
+
+            if (context.primaryPlayer != null) {
+
+                return UtilitiesOG.trueogExpand(preparedMessage, player, context.primaryPlayer);
+
+            }
+
+            return UtilitiesOG.trueogExpand(preparedMessage, player);
+
+        }
+
+        if (context.primaryPlayer != null) {
+
+            return UtilitiesOG.trueogExpand(preparedMessage, context.primaryPlayer);
+
+        }
+
+        return UtilitiesOG.trueogExpand(preparedMessage);
+
+    }
+
+    public static MessagePlaceholder placeholder(String name, Object value) {
+
+        return new MessagePlaceholder(name, value == null ? "" : String.valueOf(value));
+
+    }
+
+    private PlaceholderContext parseContext(Object... additionalPlayerInfo) {
+
+        final PlaceholderContext context = new PlaceholderContext();
+        if (additionalPlayerInfo == null) {
+
+            return context;
+
+        }
+
+        for (Object entry : additionalPlayerInfo) {
+
+            if (entry instanceof MessagePlaceholder messagePlaceholder) {
+
+                context.inlinePlaceholders.add(messagePlaceholder);
+                continue;
+
+            }
+
+            if (context.primaryObject == null) {
+
+                context.primaryObject = entry;
+                if (entry instanceof Player player) {
+
+                    context.primaryPlayer = player;
+
+                }
+
+                continue;
+
+            }
+
+            if (context.otherName == null && (entry instanceof Player || entry instanceof String)) {
+
+                if (entry instanceof Player player) {
+
+                    context.otherName = player.getName();
+
+                } else {
+
+                    context.otherName = String.valueOf(entry);
+
+                }
+
+            }
+
+        }
+
+        return context;
+
+    }
+
+    private String applyInlinePlaceholders(String message, PlaceholderContext context) {
+
+        message = replaceTag(message, "sv_player_name", getPrimaryName(context.primaryObject));
+        message = replaceTag(message, "sv_player_display_name", getPrimaryDisplayName(context.primaryObject));
+        message = replaceTag(message, "sv_player_tab_name", getPrimaryTabName(context.primaryObject));
+        message = replaceTag(message, "sv_player_prefix", getPrimaryPrefix(context.primaryObject));
+        message = replaceTag(message, "sv_player_suffix", getPrimarySuffix(context.primaryObject));
+        message = replaceTag(message, "sv_player_group", getPrimaryGroup(context.primaryObject));
+        message = replaceTag(message, "sv_player_nick", getPrimaryNick(context.primaryObject));
+        message = replaceTag(message, "sv_other_name", context.otherName != null ? context.otherName : "UNKNOWN");
+
+        for (MessagePlaceholder inlinePlaceholder : context.inlinePlaceholders) {
+
+            message = replaceTag(message, inlinePlaceholder.name(), inlinePlaceholder.value());
+
+        }
+
+        return message;
+
+    }
+
+    private String getPrimaryName(Object primaryObject) {
+
+        if (primaryObject instanceof OfflinePlayer offlinePlayer) {
+
+            return offlinePlayer.getName();
+
+        }
+
+        if (primaryObject instanceof CommandSender) {
+
+            return "Console";
+
+        }
+
+        return "";
+
+    }
+
+    private String getPrimaryDisplayName(Object primaryObject) {
+
+        if (primaryObject instanceof Player player) {
+
+            return LEGACY_SERIALIZER.serialize(player.displayName());
+
+        }
+
+        return getPrimaryName(primaryObject);
+
+    }
+
+    private String getPrimaryTabName(Object primaryObject) {
+
+        if (primaryObject instanceof Player player) {
+
+            return LEGACY_SERIALIZER.serialize(player.playerListName());
+
+        }
+
+        return getPrimaryName(primaryObject);
+
+    }
+
+    private String getPrimaryNick(Object primaryObject) {
+
+        if (!(primaryObject instanceof Player player) || Bukkit.getPluginManager().getPlugin("Essentials") == null) {
+
+            return getPrimaryName(primaryObject);
+
+        }
+
+        final Essentials essentials = (Essentials) Bukkit.getServer().getPluginManager().getPlugin("Essentials");
+        final User user = essentials.getUser(player);
+        if (user == null || user.getNickname() == null) {
+
+            return player.getName();
+
+        }
+
+        return user.getNickname();
+
+    }
+
+    private String getPrimaryGroup(Object primaryObject) {
+
+        if (!(primaryObject instanceof OfflinePlayer offlinePlayer)) {
+
+            return "";
+
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("LuckPerms") == null) {
+
+            return "";
+
+        }
+
+        try {
+
+            final LuckPerms luckPerms = LuckPermsProvider.get();
+            final net.luckperms.api.model.user.User user = luckPerms.getUserManager()
+                    .getUser(offlinePlayer.getUniqueId());
+            return user == null ? "" : user.getPrimaryGroup();
+
+        } catch (IllegalStateException ignored) {
+
+            return "";
+
+        }
+
+    }
+
+    private String getPrimaryPrefix(Object primaryObject) {
+
+        final CachedMetaData metaData = getPrimaryMetaData(primaryObject);
+        return metaData == null || metaData.getPrefix() == null ? "" : metaData.getPrefix();
+
+    }
+
+    private String getPrimarySuffix(Object primaryObject) {
+
+        final CachedMetaData metaData = getPrimaryMetaData(primaryObject);
+        return metaData == null || metaData.getSuffix() == null ? "" : metaData.getSuffix();
+
+    }
+
+    private CachedMetaData getPrimaryMetaData(Object primaryObject) {
+
+        if (!(primaryObject instanceof OfflinePlayer offlinePlayer)
+                || Bukkit.getPluginManager().getPlugin("LuckPerms") == null)
+        {
+
+            return null;
+
+        }
+
+        try {
+
+            final LuckPerms luckPerms = LuckPermsProvider.get();
+            final net.luckperms.api.model.user.User user = luckPerms.getUserManager()
+                    .getUser(offlinePlayer.getUniqueId());
+            return user == null ? null : user.getCachedData().getMetaData();
+
+        } catch (IllegalStateException ignored) {
+
+            return null;
+
+        }
+
+    }
+
+    private String replaceTag(String message, String tagName, String value) {
+
+        return message.replace("<" + tagName + ">", value == null ? "" : value);
+
+    }
+
+    public record MessagePlaceholder(String name, String value) {
+    }
+
+    private static final class PlaceholderContext {
+
+        private Object primaryObject;
+        private Player primaryPlayer;
+        private String otherName;
+        private final List<MessagePlaceholder> inlinePlaceholders = new ArrayList<>();
+
+    }
+
 }

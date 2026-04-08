@@ -9,34 +9,38 @@
 package de.myzelyam.supervanish.config;
 
 import de.myzelyam.supervanish.SuperVanish;
+import net.trueog.utilitiesog.UtilitiesOG;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 
+import java.util.List;
 import java.util.Collections;
 import java.util.logging.Level;
 
-import lombok.Data;
-
 import static de.myzelyam.supervanish.SuperVanish.*;
 
-@Data
 public class ConfigMgr {
 
     private final SuperVanish plugin;
     private final FileMgr fileMgr;
-    private boolean settingsUpdateRequired, messagesUpdateRequired;
-    private FileConfiguration settings, messages, playerData;
-    private ConfigurableFile messagesFile, settingsFile;
+    private boolean settingsUpdateRequired;
+    private boolean messagesUpdateRequired;
+    private FileConfiguration settings;
+    private FileConfiguration messages;
+    private FileConfiguration playerData;
+    private ConfigurableFile messagesFile;
+    private ConfigurableFile settingsFile;
     private StorageFile playerDataFile;
 
     public ConfigMgr(SuperVanish plugin) {
+
         this.plugin = plugin;
         fileMgr = new FileMgr(plugin);
+
     }
 
     public void prepareFiles() {
+
         // messages
         messagesFile = (ConfigurableFile) fileMgr.addFile("messages", FileMgr.FileType.CONFIG);
         messages = messagesFile.getConfig();
@@ -48,16 +52,19 @@ public class ConfigMgr {
         playerData = playerDataFile.getConfig();
         playerData.addDefault("InvisiblePlayers", Collections.emptyList());
         playerData.options().copyDefaults(true);
-        playerData.options().header("SuperVanish v" + plugin.getDescription().getVersion() + " - Data file");
+        playerData.options().setHeader(List.of("SuperVanish v" + plugin.getPluginMeta().getVersion() + " - Data file"));
         playerDataFile.save();
 
         checkFilesForLeftOvers();
+
     }
 
     public void checkFilesForLeftOvers() {
+
         try {
+
             String currentSettingsVersion = settings.getString("ConfigVersion");
-            String newestVersion = plugin.getDescription().getVersion();
+            String newestVersion = plugin.getPluginMeta().getVersion();
             String currentMessagesVersion = messages.getString("MessagesVersion");
             messagesUpdateRequired = fileRequiresRecreation(currentMessagesVersion, false);
             settingsUpdateRequired = fileRequiresRecreation(currentSettingsVersion, true);
@@ -66,32 +73,111 @@ public class ConfigMgr {
             if (newestVersion.equals(currentMessagesVersion))
                 messagesUpdateRequired = false;
             if (settingsUpdateRequired || messagesUpdateRequired) {
-                String currentVersion = plugin.getDescription().getVersion();
-                boolean isDismissed = playerData.getBoolean("PlayerData.CONSOLE.dismissed."
-                        + currentVersion.replace(".", "_"), false);
-                if (!isDismissed) plugin.log(Level.WARNING, "At least one config file is outdated, " +
-                        "it's recommended to regenerate it using '/sv recreatefiles'");
+
+                String currentVersion = plugin.getPluginMeta().getVersion();
+                boolean isDismissed = playerData
+                        .getBoolean("PlayerData.CONSOLE.dismissed." + currentVersion.replace(".", "_"), false);
+                if (!isDismissed)
+                    plugin.log(Level.WARNING, "At least one config file needs to be recreated. "
+                            + "Use '/sv recreatefiles' to regenerate it.");
+
             }
+
             if (currentSettingsVersion.startsWith("1.5.") || currentSettingsVersion.startsWith("1.4.")) {
-                Bukkit.getConsoleSender().sendMessage(ChatColor.YELLOW + "You have a very outdated " +
-                        "config file, your settings will not work until you regenerate your SV-files " +
-                        "using /sv recreatefiles");
+
+                UtilitiesOG.logToConsole("[SuperVanish]",
+                        "<yellow>You have a very old config file. Your settings will not work until you "
+                                + "regenerate your SV files using /sv recreatefiles.");
+
             }
+
         } catch (Exception e) {
+
             plugin.logException(e);
+
         }
+
     }
 
     private boolean fileRequiresRecreation(String currentVersion, boolean isSettingsFile) {
-        if (currentVersion == null) return true;
-        for (String ignoredVersion : isSettingsFile ? NON_REQUIRED_SETTINGS_UPDATES
-                : NON_REQUIRED_MESSAGES_UPDATES) {
-            if (currentVersion.equalsIgnoreCase(ignoredVersion)) return false;
+
+        if (currentVersion == null)
+            return true;
+        for (String ignoredVersion : isSettingsFile ? NON_REQUIRED_SETTINGS_UPDATES : NON_REQUIRED_MESSAGES_UPDATES) {
+
+            if (currentVersion.equalsIgnoreCase(ignoredVersion))
+                return false;
+
         }
+
         return true;
+
     }
 
     public FileMgr getFileMgr() {
+
         return fileMgr;
+
     }
+
+    public boolean isSettingsUpdateRequired() {
+
+        return settingsUpdateRequired;
+
+    }
+
+    public boolean isMessagesUpdateRequired() {
+
+        return messagesUpdateRequired;
+
+    }
+
+    public FileConfiguration getSettings() {
+
+        return settings;
+
+    }
+
+    public FileConfiguration getMessages() {
+
+        return messages;
+
+    }
+
+    public FileConfiguration getPlayerData() {
+
+        return playerData;
+
+    }
+
+    public void setSettings(FileConfiguration settings) {
+
+        this.settings = settings;
+
+    }
+
+    public void setMessages(FileConfiguration messages) {
+
+        this.messages = messages;
+
+    }
+
+    public ConfigurableFile getMessagesFile() {
+
+        return messagesFile;
+
+    }
+
+    public ConfigurableFile getSettingsFile() {
+
+        return settingsFile;
+
+    }
+
+    public StorageFile getPlayerDataFile() {
+
+        return playerDataFile;
+
+    }
+
 }

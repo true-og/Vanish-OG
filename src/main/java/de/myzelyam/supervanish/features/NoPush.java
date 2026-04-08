@@ -23,56 +23,82 @@ import org.bukkit.scoreboard.Team;
 public class NoPush extends Feature {
 
     public NoPush(SuperVanish plugin) {
+
         super(plugin);
+
     }
 
     @Override
     public boolean isActive() {
+
         return plugin.getSettings().getBoolean("InvisibilityFeatures.DisablePush");
+
     }
 
     public void setCantPush(Player p) {
+
         Team team = p.getScoreboard().getTeam("Vanished");
         if (team == null) {
+
             team = p.getScoreboard().registerNewTeam("Vanished");
+
         }
+
         try {
+
             team.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
             team.addEntry(p.getName());
+
         } catch (NoSuchMethodError | NoClassDefFoundError ignored) {
+
         }
+
     }
 
     public void setCanPush(Player p) {
+
         Team team = p.getScoreboard().getTeam("Vanished");
         if (team != null)
             team.removeEntry(p.getName());
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVanish(PlayerHideEvent e) {
+
         setCantPush(e.getPlayer());
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onReappear(PlayerShowEvent e) {
+
         setCanPush(e.getPlayer());
+
     }
 
     @EventHandler
     public void onJoin(final PlayerJoinEvent e) {
+
         if (plugin.getVanishStateMgr().isVanished(e.getPlayer().getUniqueId()))
             new BukkitRunnable() {
+
                 @Override
                 public void run() {
+
                     setCantPush(e.getPlayer());
+
                 }
+
             }.runTaskLater(plugin, 5);
+
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
+
         setCanPush(e.getPlayer());
+
     }
 
 }

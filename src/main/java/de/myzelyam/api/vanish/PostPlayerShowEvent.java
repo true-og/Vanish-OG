@@ -18,20 +18,29 @@ public class PostPlayerShowEvent extends PlayerEvent {
     private final boolean silent;
 
     public PostPlayerShowEvent(Player p, boolean silent) {
+
         super(p);
         this.silent = silent;
+
     }
 
     public static HandlerList getHandlerList() {
+
         return handlers;
+
     }
 
     public boolean isSilent() {
+
         return silent;
+
     }
 
     @Override
     public HandlerList getHandlers() {
+
         return handlers;
+
     }
+
 }

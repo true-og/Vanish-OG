@@ -8,35 +8,57 @@
 
 package de.myzelyam.supervanish.commands.subcommands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import de.myzelyam.supervanish.PlaceholderConverter;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.commands.CommandAction;
 import de.myzelyam.supervanish.commands.SubCommand;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Reload extends SubCommand {
 
     public Reload(SuperVanish plugin) {
+
         super(plugin);
+
     }
 
     @Override
     public void execute(Command cmd, CommandSender p, String[] args, String label) {
-        if (canDo(p, CommandAction.RELOAD, true)) {
-            long before = System.currentTimeMillis();
-            plugin.reload();
-            if (!Bukkit.getPluginManager().isPluginEnabled(plugin)) {
-                p.sendMessage(ChatColor.RED +
-                        "Failed to reload SuperVanish since it failed to restart itself. " +
-                        "More information is in the console. ("
-                        + (System.currentTimeMillis() - before) + "ms)");
-                return;
-            }
-            plugin.sendMessage(p, plugin.getMessage("PluginReloaded").replace("%time%",
-                    (System.currentTimeMillis() - before) + ""), p);
+
+        if (!canDo(p, CommandAction.RELOAD, true)) {
+
+            return;
+
         }
+
+        final long before = System.currentTimeMillis();
+        plugin.reload();
+        if (!Bukkit.getPluginManager().isPluginEnabled(plugin)) {
+
+            final String failMsg = "&cERROR: Failed to reload SuperVanish since it failed to restart itself. "
+                    + "More information is in the console. (" + (System.currentTimeMillis() - before) + "ms)";
+            if (p instanceof Player player) {
+
+                UtilitiesOG.trueogMessage(player, failMsg);
+
+            } else {
+
+                p.sendMessage(failMsg);
+
+            }
+
+            return;
+
+        }
+
+        plugin.sendMessage(p, plugin.getMessage("PluginReloaded"), p,
+                PlaceholderConverter.placeholder("time", System.currentTimeMillis() - before));
+
     }
+
 }

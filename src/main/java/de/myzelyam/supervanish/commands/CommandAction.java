@@ -16,89 +16,68 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
 public enum CommandAction {
-    VANISH_SELF(
-            "sv.use",
-            false,
-            "/sv [on|off]",
-            "Toggles your visibility") {
+
+    VANISH_SELF("sv.use", false, "/sv [on|off]", "Toggles your visibility") {
+
         @Override
         public boolean checkPermission(CommandSender sender, SuperVanish plugin) {
+
             Validation.checkNotNull(plugin, "plugin cannot be null");
             return plugin.hasPermissionToVanish(sender);
+
         }
+
     },
-    VANISH_OTHER(
-            "sv.others",
-            true,
-            "/sv [on|off] <player>",
-            "Shows or hides a player"),
-    VANISHED_LIST(
-            "sv.list",
-            true,
-            "/sv list",
-            "Shows a list of vanished players"),
-    BROADCAST_LOGIN(
-            "sv.login",
-            false,
-            "/sv login",
-            "Broadcasts a fake login message"),
-    BROADCAST_LOGOUT(
-            "sv.logout",
-            false,
-            "/sv logout",
-            "Broadcasts a fake logout message"),
-    TOGGLE_ITEM_PICKUPS(
-            "sv.toggleitems",
-            false,
-            "/sv tipu",
-            "Toggles picking up items") {
+    VANISH_OTHER("sv.others", true, "/sv [on|off] <player>", "Shows or hides a player"),
+    VANISHED_LIST("sv.list", true, "/sv list", "Shows a list of vanished players"),
+    BROADCAST_LOGIN("sv.login", false, "/sv login", "Broadcasts a fake login message"),
+    BROADCAST_LOGOUT("sv.logout", false, "/sv logout", "Broadcasts a fake logout message"),
+    TOGGLE_ITEM_PICKUPS("sv.toggleitems", false, "/sv tipu", "Toggles picking up items")
+    {
+
         @Override
         public boolean checkPermission(CommandSender sender, SuperVanish plugin) {
+
             return sender.hasPermission(getMainPermission()) || sender.hasPermission("sv.toggleitempickups");
+
         }
+
     },
-    RECREATE_FILES(
-            "sv.recreatefiles",
-            true,
-            "/sv recreatefiles",
-            "Recreates the config") {
+    RECREATE_FILES("sv.recreatefiles", true, "/sv recreatefiles", "Recreates the config")
+    {
+
         @Override
         public boolean checkPermission(CommandSender sender, SuperVanish plugin) {
+
             return sender.hasPermission(getMainPermission()) || sender.hasPermission("sv.updatecfg");
+
         }
+
     },
-    RELOAD(
-            "sv.reload",
-            true,
-            "/sv reload",
-            "Reloads all settings and messages"),
-    PRINT_STACKTRACE(
-            "sv.stacktrace",
-            true,
-            "/sv stacktrace",
-            "Logs info for a bug report"),
-    SHOW_HELP(
-            "sv.help",
-            true,
-            "/sv help",
-            "Shows this help page");
+    RELOAD("sv.reload", true, "/sv reload", "Reloads all settings and messages"),
+    PRINT_STACKTRACE("sv.stacktrace", true, "/sv stacktrace", "Logs info for a bug report"),
+    SHOW_HELP("sv.help", true, "/sv help", "Shows this help page");
 
     /**
-     * Use {@link #checkPermission(CommandSender, SuperVanish)} to check whether a {@link CommandSender} has
-     * permission to perform an action or not
+     * Use {@link #checkPermission(CommandSender, SuperVanish)} to check whether a
+     * {@link CommandSender} has permission to perform an action or not
      */
-    @Getter
     private final String mainPermission;
     private final boolean console;
-    @Getter
     private final String usage, description;
 
+    CommandAction(String mainPermission, boolean console, String usage, String description) {
+
+        this.mainPermission = mainPermission;
+        this.console = console;
+        this.usage = usage;
+        this.description = description;
+
+    }
+
     static List<String> getAvailableFirstArguments(CommandSender sender, SuperVanish plugin) {
+
         Validation.checkNotNull(plugin, "plugin cannot be null");
         List<String> list = new ArrayList<>();
         if (SHOW_HELP.checkPermission(sender, plugin))
@@ -118,20 +97,46 @@ public enum CommandAction {
         if (PRINT_STACKTRACE.checkPermission(sender, plugin))
             list.add("stacktrace");
         return list;
+
     }
 
     public static boolean hasAnyCmdPermission(CommandSender sender, SuperVanish plugin) {
+
         for (CommandAction action : CommandAction.values())
             if (action.checkPermission(sender, plugin))
                 return true;
         return false;
+
     }
 
     public boolean checkPermission(CommandSender sender, SuperVanish plugin) {
+
         return sender.hasPermission(getMainPermission());
+
     }
 
     public boolean usableByConsole() {
+
         return console;
+
     }
+
+    public String getMainPermission() {
+
+        return mainPermission;
+
+    }
+
+    public String getUsage() {
+
+        return usage;
+
+    }
+
+    public String getDescription() {
+
+        return description;
+
+    }
+
 }

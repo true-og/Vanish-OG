@@ -24,52 +24,64 @@ public class DynmapHook extends PluginHook {
     private final SuperVanish superVanish;
 
     public DynmapHook(SuperVanish superVanish) {
+
         super(superVanish);
         this.superVanish = superVanish;
-        sendJoinLeave
-                = superVanish.getSettings().getBoolean("HookOptions.DynmapSendJoinLeaveMessages")
+        sendJoinLeave = superVanish.getSettings().getBoolean("HookOptions.DynmapSendJoinLeaveMessages")
                 && !superVanish.getMessage("DynmapFakeJoin").equals("");
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVanish(PlayerHideEvent e) {
+
         Player p = e.getPlayer();
         DynmapAPI dynmap = (DynmapAPI) plugin;
 
         dynmap.setPlayerVisiblity(p, false);
         if (sendJoinLeave)
-            dynmap.sendBroadcastToWeb("",
-                    superVanish.replacePlaceholders(superVanish.getMessage("DynmapFakeQuit"), p));
+            dynmap.sendBroadcastToWeb("", superVanish.replacePlaceholders(superVanish.getMessage("DynmapFakeQuit"), p));
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onReappear(PlayerShowEvent e) {
+
         Player p = e.getPlayer();
         DynmapAPI dynmap = (DynmapAPI) plugin;
 
         dynmap.setPlayerVisiblity(p, true);
         if (sendJoinLeave)
-            dynmap.sendBroadcastToWeb("",
-                    superVanish.replacePlaceholders(superVanish.getMessage("DynmapFakeJoin"), p));
+            dynmap.sendBroadcastToWeb("", superVanish.replacePlaceholders(superVanish.getMessage("DynmapFakeJoin"), p));
+
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onJoin(PlayerJoinEvent e) {
+
         Player p = e.getPlayer();
         DynmapAPI dynmap = (DynmapAPI) plugin;
 
         if (superVanish.getVanishStateMgr().isVanished(p.getUniqueId())) {
+
             dynmap.setPlayerVisiblity(p, false);
+
         }
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onQuit(PlayerQuitEvent e) {
+
         Player p = e.getPlayer();
         DynmapAPI dynmap = (DynmapAPI) plugin;
 
         if (superVanish.getVanishStateMgr().isVanished(p.getUniqueId())) {
+
             dynmap.setPlayerVisiblity(p, true);
+
         }
+
     }
+
 }

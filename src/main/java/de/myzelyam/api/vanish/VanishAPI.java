@@ -11,10 +11,12 @@ package de.myzelyam.api.vanish;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.utils.Validation;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,38 +32,48 @@ public class VanishAPI {
      * @return A collection of the UUIDs of all online vanished players
      */
     public static List<UUID> getInvisiblePlayers() {
+
         return new ArrayList<>(PLUGIN.getVanishStateMgr().getOnlineVanishedPlayers());
+
     }
 
     /**
-     * @return A collection of the UUIDs of all vanished players, both online and offline players
+     * @return A collection of the UUIDs of all vanished players, both online and
+     *         offline players
      */
     public static List<UUID> getAllInvisiblePlayers() {
+
         return new ArrayList<>(PLUGIN.getVanishStateMgr().getVanishedPlayers());
+
     }
 
     /**
-     * Player must be online for this to return true if MySQL is enabled
+     * Asynchronously checks if an online player is currently vanished.
      *
      * @param p - the player.
-     * @return TRUE if the player is invisible, FALSE otherwise.
+     * @return A future that completes with TRUE if the player is vanished, FALSE
+     *         otherwise.
      */
-    public static boolean isInvisible(Player p) {
+    public static CompletableFuture<Boolean> isPlayerVanished(Player p) {
+
         Validation.checkNotNull("Player cannot be null!", p);
-        return PLUGIN.getVanishStateMgr().isVanished(p.getUniqueId());
+        return isUUIDVanished(p.getUniqueId());
+
     }
 
     /**
-     * Checks if a player is invisible, online or not
-     * <p/>
-     * Deprecated: Will cause minor lag if mysql is enabled, use asynchronously or sparingly
+     * Asynchronously checks if a player is vanished, online or offline.
      *
      * @param uuid - the player's UUID.
-     * @return TRUE if the player is invisible, FALSE otherwise.
+     * @return A future that completes with TRUE if the player is vanished, FALSE
+     *         otherwise.
      */
-    public static boolean isInvisibleOffline(UUID uuid) {
+    public static CompletableFuture<Boolean> isUUIDVanished(UUID uuid) {
+
         Validation.checkNotNull("UUID cannot be null!", uuid);
-        return PLUGIN.getVanishStateMgr().isVanished(uuid);
+        return CompletableFuture.supplyAsync(() -> PLUGIN.getVanishStateMgr().isVanished(uuid),
+                runnable -> Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, runnable));
+
     }
 
     /**
@@ -70,8 +82,10 @@ public class VanishAPI {
      * @param p - the player.
      */
     public static void hidePlayer(Player p) {
+
         Validation.checkNotNull("Player cannot be null!", p);
         PLUGIN.getVisibilityChanger().hidePlayer(p);
+
     }
 
     /**
@@ -80,8 +94,10 @@ public class VanishAPI {
      * @param p - the player.
      */
     public static void showPlayer(Player p) {
+
         Validation.checkNotNull("Player cannot be null!", p);
         PLUGIN.getVisibilityChanger().showPlayer(p);
+
     }
 
     /**
@@ -89,33 +105,49 @@ public class VanishAPI {
      *
      * @param viewer - the viewer
      * @param viewed - the viewed player
-     * @return TRUE if viewed is not vanished or viewer has the permission to see viewed
+     * @return TRUE if viewed is not vanished or viewer has the permission to see
+     *         viewed
      */
     public static boolean canSee(Player viewer, Player viewed) {
+
         return PLUGIN.canSee(viewer, viewed);
+
     }
 
     public static FileConfiguration getConfiguration() {
+
         return PLUGIN.getSettings();
+
     }
 
     public static FileConfiguration getMessages() {
+
         return PLUGIN.getMessages();
+
     }
 
     public static FileConfiguration getPlayerData() {
+
         return PLUGIN.getPlayerData();
+
     }
 
     public static void reloadConfig() {
+
         PLUGIN.reload();
+
     }
 
     public static SuperVanish getPlugin() {
+
         return PLUGIN;
+
     }
 
     public static void setPlugin(SuperVanish plugin) {
+
         VanishAPI.PLUGIN = plugin;
+
     }
+
 }

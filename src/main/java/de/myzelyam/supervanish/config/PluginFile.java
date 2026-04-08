@@ -17,4 +17,5 @@ public interface PluginFile<CT> {
     CT getConfig();
 
     void save();
+
 }

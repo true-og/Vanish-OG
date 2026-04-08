@@ -33,95 +33,137 @@ public class NightVision extends Feature implements Runnable {
     private final Map<UUID, PotionEffect> playerPreviousPotionEffectMap = new HashMap<>();
 
     public NightVision(SuperVanish plugin) {
+
         super(plugin);
+
     }
 
     @Override
     public void onEnable() {
+
         plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, this, 20 * 60 * 2, 20 * 60 * 2);
+
     }
 
     @Override
     public boolean isActive() {
+
         return plugin.getSettings().getBoolean("InvisibilityFeatures.NightVisionEffect");
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVanish(PlayerHideEvent e) {
+
         Player p = e.getPlayer();
         // getPotionEffect(..) is 1.10+ API
         if (plugin.getVersionUtil().isOneDotXOrHigher(10)) {
+
             if (p.getPotionEffect(PotionEffectType.NIGHT_VISION) != null) {
+
                 playerPreviousPotionEffectMap.put(p.getUniqueId(), p.getPotionEffect(PotionEffectType.NIGHT_VISION));
+
             }
+
         }
+
         sendAddPotionEffect(p);
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onReappear(PlayerShowEvent e) {
+
         Player p = e.getPlayer();
         sendRemovePotionEffect(p);
         if (playerPreviousPotionEffectMap.containsKey(p.getUniqueId())) {
+
             p.addPotionEffect(playerPreviousPotionEffectMap.remove(p.getUniqueId()));
+
         }
+
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e) {
+
         Player p = e.getPlayer();
         if (!plugin.getVanishStateMgr().isVanished(p.getUniqueId())) {
+
             if (playerPreviousPotionEffectMap.containsKey(p.getUniqueId())) {
+
                 p.addPotionEffect(playerPreviousPotionEffectMap.remove(p.getUniqueId()));
+
             }
+
         } else {
+
             sendAddPotionEffect(p);
+
         }
+
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent e) {
+
         Player p = e.getPlayer();
         if (!plugin.getVanishStateMgr().isVanished(p.getUniqueId()))
             return;
         sendRemovePotionEffect(p);
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onTeleport(PlayerTeleportEvent e) {
+
         Player p = e.getPlayer();
         if (!plugin.getVanishStateMgr().isVanished(p.getUniqueId()))
             return;
         if (e.getFrom().getWorld() == null || e.getTo() == null || e.getTo().getWorld() == null
-                || e.getFrom().getWorld().getName().equals(e.getTo().getWorld().getName())) return;
+                || e.getFrom().getWorld().getName().equals(e.getTo().getWorld().getName()))
+            return;
         sendRemovePotionEffect(p);
+
     }
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent e) {
+
         Player p = e.getPlayer();
         if (!plugin.getVanishStateMgr().isVanished(p.getUniqueId()))
             return;
         sendAddPotionEffect(p);
+
     }
 
     @Override
     public void run() {
+
         // renew every now and then to prevent blinking bug
         for (UUID uuid : plugin.getVanishStateMgr().getOnlineVanishedPlayers()) {
+
             Player p = Bukkit.getPlayer(uuid);
-            if (p == null) continue;
+            if (p == null)
+                continue;
             sendRemovePotionEffect(p);
             sendAddPotionEffect(p);
+
         }
+
     }
 
     private void sendAddPotionEffect(Player p) {
-        p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION,
-                INFINITE_POTION_EFFECT_LENGTH, 0, true, false));
+
+        p.addPotionEffect(
+                new PotionEffect(PotionEffectType.NIGHT_VISION, INFINITE_POTION_EFFECT_LENGTH, 0, true, false));
+
     }
 
     private void sendRemovePotionEffect(Player p) {
+
         p.removePotionEffect(PotionEffectType.NIGHT_VISION);
+
     }
+
 }

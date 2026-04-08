@@ -13,6 +13,7 @@ InvisibilityFeatures:
   # Should invisible players open chests and shulker boxes without the animation and sound?
   # This makes them go into spectator mode temporarily. It's better to only give access to this feature
   # to staff members since a server crash can cause players to stay in spectator mode.
+  # Use a plugin such as true-og/WGamemode to set their gamemodes back automatically.
   # Permission: sv.silentchest
   OpenChestsSilently: true
   # Should invisible players not be able to trigger pressure plates and tripwire?
@@ -20,11 +21,12 @@ InvisibilityFeatures:
   DisablePressurePlates: true
   # Should invisible players not be able to push other players or be able to be pushed?
   # WARNING: Uses the scoreboard and may conflict with other plugins!
+  # Not necessary if you already use OCM with player collisions disabled.
   DisablePush: false
   # Should vanished players pick up items by default? This can be changed individually with /sv tipu
   DefaultPickUpItemsOption: false
   # Should SV modify tablist packets to prevent the server from leaking who is online?
-  # This currently only works on versions below 1.19
+  # Works on Purpur 1.19.4 and is translated correctly for ViaSuite clients
   ModifyTablistPackets: true
   # Should SV modify tab complete packets to prevent minecraft commands from leaking who is online?
   ModifyTabCompletePackets: true
@@ -36,7 +38,7 @@ InvisibilityFeatures:
   DisableDripLeaf: true
   # Should vanished players be unable to trigger raids?
   PreventRaidTriggering: true
-  # Should vanished players be unable to make mobs spawn? (paper only)
+  # Should vanished players be unable to make mobs spawn? (paper only).
   PreventMobSpawning: true
 
   Fly:
@@ -56,14 +58,14 @@ VanishStateFeatures:
   ReappearOnQuit: false
   # Should invisible players reappear automatically
   # when they change their world and don't have the permission 'sv.use' anymore?
-  CheckPermissionOnWorldChange: false
+  CheckPermissionOnWorldChange: true
   # Should invisible players reappear automatically
   # when they leave the server and don't have the permission 'sv.use' anymore?
-  CheckPermissionOnQuit: false
+  CheckPermissionOnQuit: true
   # Should invisible players reappear automatically
   # when they join the server and don't have the permission 'sv.use' anymore?
   # Doesn't work if you use GroupManager for permissions
-  CheckPermissionOnLogin: false
+  CheckPermissionOnLogin: true
 
 ############## Indication Features ###############
 IndicationFeatures:
@@ -80,40 +82,11 @@ IndicationFeatures:
   # Should vanished players show up dark gray in the tablist and should only their head be visible?
   # Only players who are allowed to see the player will see this effect; this helps other staff with
   # differentiating them from players they should talk to; Requires ProtocolLib
-  # This currently only works on versions below 1.19
+  # Works on Purpur 1.19.4 and is translated correctly for ViaSuite clients
   MarkVanishedPlayersAsSpectators: true
 
 ################ Message Options #################
 MessageOptions:
-
-  FakeJoinQuitMessages:
-    # Should SV broadcast any kind of announcement (fake quit or player vanished) when a player vanishes?
-    # You can change the messages in the messages.yml file.
-    BroadcastFakeQuitOnVanish: true
-    # Should SV broadcast any kind of announcement (fake join or player reappeared) when a player reappears?
-    # You can change the messages in the messages.yml file.
-    BroadcastFakeJoinOnReappear: true
-    # Should players with the permission 'sv.see' get an admin announcement instead of a fake join/quit message?
-    # You can change the messages in the messages.yml file.
-    AnnounceVanishReappearToAdmins: true
-    # Should there only be admin announcements and no fake join/quit messages?
-    SendMessageOnlyToAdmins: false
-    # Should there only be fake join/quit messages and no admin announcements?
-    SendMessageOnlyToUsers: false
-
-  # Should SV hide the real join/leave messages of invisible players?
-  HideRealJoinQuitMessages: true
-  # Should SV hide the advancement messages of invisible players (only send it to the player)? (paper only)
-  HideAdvancementMessages: true
-  # Should SV hide leave messages for invisible players if 'VanishStateFeatures->ReappearOnQuit' is turned on?
-  # Overrides 'HideRealJoinQuitMessages'
-  ReappearOnQuitHideLeaveMsg: true
-  # If the setting above is turned on, should players with the permission 'sv.see' get
-  # a message when an invisible player joins/quits?
-  AnnounceRealJoinQuitToAdmins: true
-  # If the setting above is turned on, should players with the permission 'sv.see' get
-  # a message when an invisible player dies?
-  AnnounceDeathToAdmins: true
   # Should SV remind players who join the server vanished of being invisible (in chat)?
   # You can change the message in the messages.yml file.
   RemindVanishedOnJoin: true
@@ -131,7 +104,7 @@ RestrictiveOptions:
   PreventBlockPlacing: false
   # Should invisible players not be able to damage players or mobs?
   # Bypass permission: sv.damage
-  PreventHittingEntities: false
+  PreventHittingEntities: true
 
 ############# External Invisibility ##############
 ExternalInvisibility:
@@ -150,23 +123,19 @@ HookOptions:
   # Important: You have to reload both SV and Essentials if you change this setting (reload SV first)
   EnableEssentialsHook: true
   # Should SV hide invisible players on your dynamic map and broadcast join/leave messages if you use Dynmap?
-  EnableDynmapHook: true
+  EnableDynmapHook: false
   # Should SV send fake join/leave messages in dynmap's web-chat?
   # You can configure the join/leave messages in the messages.yml file
-  DynmapSendJoinLeaveMessages: true
+  DynmapSendJoinLeaveMessages: false
   # Should SV hook into TrailGUI and disable trails while you're vanished?
-  EnableTrailGUIHook: true
-  # Should SV hook into PlaceholderAPI and add new placeholders to SV + register its own ones for other plugins?
+  EnableTrailGUIHook: false
+  # Should SV hook into Utilities-OG MiniPlaceholders and add new placeholders to SV + register its own ones for
+  # other plugins?
   # Own ones: isvanished, vanishedplayers, playercount
-  # Format: %supervanish_<placeholder>%
-  EnablePlaceholderAPIHook: true
-  # Should SV hook into MVdWPlaceholderAPI and add new placeholders to SV + register its own ones for other
-  # plugins?
-  # Own ones: isvanished, vanishedplayers, playercount
-  # Format: {supervanish_<placeholder>}
-  EnableMVdWPlaceholderAPIHook: true
+  # Format: <supervanish_<placeholder>>
+  EnableUtilitiesOGHook: true
   # Should SV stop NPCs from greeting or talking about hidden players?
-  EnableCitizensHook: true
+  EnableCitizensHook: false
   # Should SV use OpenInv for opening chests silently?
   EnableOpenInvHook: true
 
@@ -177,19 +146,10 @@ CompatibilityOptions:
   # Allowed values are LOWEST, LOW, NORMAL, HIGH, HIGHEST and MONITOR
   # Higher priorities might override other plugins while lower ones might not
 
-  # The priority for removing the join message
-  PlayerJoinEventPriority: HIGH # <- keep HIGH if you use Essentials to modify join/quit messages !!
-  # The priority for removing the quit message
-  PlayerQuitEventPriority: HIGH
-
-############# Miscellaneous Options ##############
-MiscellaneousOptions:
-
-  UpdateChecker:
-    # Should SV check for updates on spigot regularly? There is no automatic update; this just informs you
-    Enable: true
-    # Should players with the permission 'sv.notify' get notified if the current version of SV is outdated?
-    NotifyAdmins: true
+  # The join listener still needs to run after some plugins that adjust visibility state on login.
+  PlayerJoinEventPriority: HIGHEST
+  # The quit listener still needs to run after some plugins that adjust vanish state on logout.
+  PlayerQuitEventPriority: HIGHEST
 
 ################# Do Not Touch ###################
 ConfigVersion: ${project.version}

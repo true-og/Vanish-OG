@@ -1,9 +1,9 @@
-name: SuperVanish
+name: SuperVanish-OG
 main: de.myzelyam.supervanish.SuperVanish
-author: MyzelYam
+authors: [MyzelYam, NotAlexNoyle]
 description: Advanced /vanish plugin which makes other players think that you're not on the server
-version: ${project.version}
-api-version: 1.13
+version: ${version}
+api-version: ${apiVersion}
 website: https://www.spigotmc.org/resources/supervanish-be-invisible.1331/
 softdepend:
 - ProtocolLib
@@ -12,11 +12,10 @@ softdepend:
 - dynmap
 - Essentials
 - TrailGUI
-- PlaceholderAPI
+- Utilities-OG
 - CustomParticleEffects
 - NametagEdit
-- MVdWPlaceholderAPI
-- Vault
+- LuckPerms
 - OpenInv
 commands:
   sv:
@@ -38,7 +37,6 @@ permissions:
       sv.recreatefiles: true
       sv.notoggle: true
       sv.joinvanished: true
-      sv.notify: true
       sv.breakblocks: true
       sv.placeblocks: true
       sv.damage: true

@@ -25,19 +25,25 @@ public class PlayerVanishStateChangeEvent extends Event implements Cancellable {
     private boolean isCancelled = false;
 
     public PlayerVanishStateChangeEvent(UUID uuid, String name, boolean vanishing, String cause) {
+
         this.vanishing = vanishing;
         this.uuid = uuid;
         this.name = name;
         this.cause = cause;
+
     }
 
     public static HandlerList getHandlerList() {
+
         return handlers;
+
     }
 
     @Override
     public boolean isCancelled() {
+
         return isCancelled;
+
     }
 
     /**
@@ -45,41 +51,55 @@ public class PlayerVanishStateChangeEvent extends Event implements Cancellable {
      */
     @Override
     public void setCancelled(boolean cancel) {
+
         isCancelled = cancel;
+
     }
 
     /**
      * @return TRUE if the player is vanishing, FALSE if the player is reappearing
      */
     public boolean isVanishing() {
+
         return vanishing;
+
     }
 
     /**
      * @return The name of the player who is vanishing/reappearing
      */
     public String getName() {
+
         return name;
+
     }
 
     /**
      * @return The UUID of the player who is vanishing/reappearing
      */
     public UUID getUUID() {
+
         return uuid;
+
     }
 
     /**
-     * @return The name of the command sender who caused the vanish state change or null if the cause is
-     * either not specified or it's SuperVanish itself, please note that if this returns 'CONSOLE' then it's
-     * the console which caused this state change
+     * @return The name of the command sender who caused the vanish state change or
+     *         null if the cause is either not specified or it's SuperVanish itself,
+     *         please note that if this returns 'CONSOLE' then it's the console
+     *         which caused this state change
      */
     public String getCause() {
+
         return cause;
+
     }
 
     @Override
     public HandlerList getHandlers() {
+
         return handlers;
+
     }
+
 }

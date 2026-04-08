@@ -20,32 +20,47 @@ public class PaperServerPingListener implements Listener {
     private final SuperVanish plugin;
 
     public PaperServerPingListener(SuperVanish plugin) {
+
         this.plugin = plugin;
+
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onServerListPing(PaperServerListPingEvent e) {
+
         try {
+
             final FileConfiguration settings = plugin.getSettings();
             if (!settings.getBoolean("ExternalInvisibility.ServerList.AdjustAmountOfOnlinePlayers")
                     && !settings.getBoolean("ExternalInvisibility.ServerList.AdjustListOfLoggedInPlayers"))
                 return;
             Collection<UUID> onlineVanishedPlayers = plugin.getVanishStateMgr().getOnlineVanishedPlayers();
-            int vanishedPlayersCount = onlineVanishedPlayers.size(),
-                    playerCount = Bukkit.getOnlinePlayers().size();
+            int vanishedPlayersCount = onlineVanishedPlayers.size(), playerCount = Bukkit.getOnlinePlayers().size();
             if (settings.getBoolean("ExternalInvisibility.ServerList.AdjustAmountOfOnlinePlayers")) {
+
                 e.setNumPlayers(playerCount - vanishedPlayersCount);
+
             }
+
             if (settings.getBoolean("ExternalInvisibility.ServerList.AdjustListOfLoggedInPlayers")) {
+
                 List<PlayerProfile> playerSample = e.getPlayerSample();
 
                 playerSample.removeIf(profile -> onlineVanishedPlayers.contains(profile.getId()));
+
             }
+
         } catch (Exception er) {
+
             if (!errorLogged) {
+
                 plugin.logException(er);
                 errorLogged = true;
+
             }
+
         }
+
     }
+
 }

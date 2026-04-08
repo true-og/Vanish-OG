@@ -21,9 +21,14 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
- * This is currently unused on Minecraft 1.19 or higher
+ * Filters vanished players out of the server-bound PLAYER_INFO packet. On
+ * Purpur 1.19.4 the server emits ClientboundPlayerInfoUpdatePacket which
+ * ProtocolLib 5.0 maps to PacketType.Play.Server.PLAYER_INFO. ViaSuite handles
+ * re-encoding for clients on 1.8-1.21.x, so this listener only needs to operate
+ * on the server-native packet.
  */
 public class PlayerInfoModule extends PacketAdapter {
 
@@ -33,46 +38,84 @@ public class PlayerInfoModule extends PacketAdapter {
     private boolean errorLogged = false;
 
     public PlayerInfoModule(SuperVanish plugin, PlayerHider hider) {
+
         super(plugin, ListenerPriority.HIGH, PacketType.Play.Server.PLAYER_INFO);
         this.plugin = plugin;
         this.hider = hider;
+
     }
 
     public static void register(SuperVanish plugin, PlayerHider hider) {
+
         ProtocolLibrary.getProtocolManager().addPacketListener(new PlayerInfoModule(plugin, hider));
+
     }
 
     @Override
     public void onPacketSending(PacketEvent event) {
+
         // multiple events share same packet object
         event.setPacket(event.getPacket().shallowClone());
         try {
+
             List<PlayerInfoData> infoDataList = new ArrayList<>(event.getPacket().getPlayerInfoDataLists().read(0));
 
             Player receiver = event.getPlayer();
             for (PlayerInfoData infoData : ImmutableList.copyOf(infoDataList)) {
-                if (hider.isHidden(infoData.getProfile().getUUID(), receiver)) {
+
+                UUID uuid = extractUUID(infoData);
+                if (uuid == null)
+                    continue;
+                if (hider.isHidden(uuid, receiver)) {
+
                     infoDataList.remove(infoData);
+
                 }
+
             }
+
             if (infoDataList.isEmpty()) {
+
                 event.setCancelled(true);
+
             }
+
             event.getPacket().getPlayerInfoDataLists().write(0, infoDataList);
+
         } catch (Exception | NoClassDefFoundError e) {
-            if (e.getMessage() == null
-                    || !e.getMessage().endsWith("is not supported for temporary players.")) {
-                if (errorLogged) return;
+
+            if (e.getMessage() == null || !e.getMessage().endsWith("is not supported for temporary players.")) {
+
+                if (errorLogged)
+                    return;
                 plugin.logException(e);
-                plugin.getLogger().warning("IMPORTANT: Please make sure that you are using the latest " +
-                        "dev-build of ProtocolLib and that your server is up-to-date! This error likely " +
-                        "happened inside of ProtocolLib code which is out of SuperVanish's control. It's part " +
-                        "of an optional invisibility module and can be removed safely by disabling " +
-                        "ModifyTablistPackets in the config. Please report this " +
-                        "error if you can reproduce it on an up-to-date server with only latest " +
-                        "ProtocolLib and latest SV installed.");
+                plugin.getLogger().warning("IMPORTANT: Please make sure that you are using the latest "
+                        + "dev-build of ProtocolLib and that your server is up-to-date! This error likely "
+                        + "happened inside of ProtocolLib code which is out of SuperVanish's control. It's part "
+                        + "of an optional invisibility module and can be removed safely by disabling "
+                        + "ModifyTablistPackets in the config. Please report this "
+                        + "error if you can reproduce it on an up-to-date server with only latest "
+                        + "ProtocolLib and latest SV installed.");
                 errorLogged = true;
+
             }
+
         }
+
     }
+
+    private UUID extractUUID(PlayerInfoData infoData) {
+
+        // On 1.19.3+ the per-entry profile is null for non-ADD_PLAYER actions, so
+        // prefer
+        // profileId which the wrapper exposes for both legacy and update packets.
+        UUID uuid = infoData.getProfileId();
+        if (uuid != null)
+            return uuid;
+        if (infoData.getProfile() != null)
+            return infoData.getProfile().getUUID();
+        return null;
+
+    }
+
 }

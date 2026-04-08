@@ -20,34 +20,49 @@ public class PlayerShowEvent extends PlayerEvent implements Cancellable {
     private boolean isCancelled = false;
 
     public PlayerShowEvent(Player p, boolean silent) {
+
         super(p);
         this.silent = silent;
+
     }
 
     public static HandlerList getHandlerList() {
+
         return handlers;
+
     }
 
     public boolean isSilent() {
+
         return silent;
+
     }
 
     public void setSilent(boolean silent) {
+
         this.silent = silent;
+
     }
 
     @Override
     public boolean isCancelled() {
+
         return isCancelled;
+
     }
 
     @Override
     public void setCancelled(boolean cancel) {
+
         isCancelled = cancel;
+
     }
 
     @Override
     public HandlerList getHandlers() {
+
         return handlers;
+
     }
+
 }

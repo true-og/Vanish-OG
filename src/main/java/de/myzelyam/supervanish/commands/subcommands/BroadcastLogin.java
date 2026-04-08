@@ -20,14 +20,21 @@ import org.bukkit.entity.Player;
 public class BroadcastLogin extends SubCommand {
 
     public BroadcastLogin(SuperVanish plugin) {
+
         super(plugin);
+
     }
 
     @Override
     public void execute(Command cmd, CommandSender p, String[] args, String label) {
+
         if (canDo(p, CommandAction.BROADCAST_LOGIN, true)) {
+
             for (Player onlinePlayer : Bukkit.getOnlinePlayers())
                 plugin.sendMessage(onlinePlayer, "ReappearMessage", p, onlinePlayer);
+
         }
+
     }
+
 }

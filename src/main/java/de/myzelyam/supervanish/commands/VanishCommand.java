@@ -8,29 +8,33 @@
 
 package de.myzelyam.supervanish.commands;
 
-import de.myzelyam.supervanish.SuperVanish;
+import java.util.List;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.List;
+import de.myzelyam.supervanish.SuperVanish;
 
 public class VanishCommand {
 
-    private final SuperVanish plugin;
     private final SubCommandMgr subCommandMgr;
 
     public VanishCommand(SuperVanish plugin) {
-        this.plugin = plugin;
+
         subCommandMgr = new SubCommandMgr(plugin);
+
     }
 
     public void execute(Command command, CommandSender sender, String commandLabel, String[] args) {
+
         subCommandMgr.execute(command, sender, args, commandLabel);
+
     }
 
-    public List<String> tabComplete(Command command, CommandSender sender, String alias, String[] args)
-            throws IllegalArgumentException {
+    public List<String> tabComplete(Command command, CommandSender sender, String alias, String[] args) {
+
         return subCommandMgr.onTabComplete(command, sender, alias, args);
+
     }
+
 }

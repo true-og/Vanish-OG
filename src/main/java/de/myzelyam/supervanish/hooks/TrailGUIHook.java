@@ -23,28 +23,37 @@ import ca.jamiesinn.trailgui.TrailGUI;
 public class TrailGUIHook extends PluginHook {
 
     public TrailGUIHook(SuperVanish superVanish) {
+
         super(superVanish);
+
     }
 
     @Override
     public void onPluginEnable(Plugin plugin) {
+
         if (!(plugin instanceof TrailGUI)) {
-            superVanish.log(Level.WARNING,
-                    "Failed to hook into TrailGUI. (PluginNotFound)");
+
+            superVanish.log(Level.WARNING, "Failed to hook into TrailGUI. (PluginNotFound)");
             return;
+
         }
+
         PlayerMoveEvent.getHandlerList().unregister(plugin);
         final Listeners trailGUIListeners = new Listeners((TrailGUI) plugin);
         plugin.getServer().getPluginManager().registerEvents(new Listener() {
 
             @EventHandler
             public void onPlayerMove(PlayerMoveEvent event) {
-                if (superVanish.getVanishStateMgr()
-                        .getOnlineVanishedPlayers().contains(
-                                event.getPlayer().getUniqueId()))
+
+                if (superVanish.getVanishStateMgr().getOnlineVanishedPlayers()
+                        .contains(event.getPlayer().getUniqueId()))
                     return;
                 trailGUIListeners.onPlayerMove(event);
+
             }
+
         }, plugin);
+
     }
+
 }

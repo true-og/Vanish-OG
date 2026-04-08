@@ -24,4 +24,5 @@ public interface SuperVanishPlugin {
     void logException(Throwable e);
 
     VanishStateMgr getVanishStateMgr();
+
 }

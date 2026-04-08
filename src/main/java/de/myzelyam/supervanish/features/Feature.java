@@ -20,18 +20,25 @@ public abstract class Feature implements Listener {
     protected final SuperVanish plugin;
 
     public Feature(SuperVanish plugin) {
+
         this.plugin = plugin;
+
     }
 
     public void onEnable() {
+
     }
 
     public void onDisable() {
+
     }
 
     public abstract boolean isActive();
 
     protected void delay(Runnable runnable) {
+
         plugin.getServer().getScheduler().runTaskLater(plugin, runnable, 1);
+
     }
+
 }

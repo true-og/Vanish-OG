@@ -22,23 +22,35 @@ public class WorldChangeListener implements Listener {
     private final SuperVanish plugin;
 
     public WorldChangeListener(SuperVanish plugin) {
+
         this.plugin = plugin;
+
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onWorldChange(PlayerChangedWorldEvent e) {
+
         try {
+
             final Player p = e.getPlayer();
             if (!plugin.getVanishStateMgr().isVanished(p.getUniqueId()))
                 return;
             // check auto-reappear option
             if (plugin.getSettings().getBoolean("VanishStateFeatures.ReappearOnWorldChange")
                     || plugin.getSettings().getBoolean("VanishStateFeatures.CheckPermissionOnWorldChange")
-                    && !CommandAction.VANISH_SELF.checkPermission(p, plugin)) {
+                            && !CommandAction.VANISH_SELF.checkPermission(p, plugin))
+            {
+
                 plugin.getVisibilityChanger().showPlayer(p);
+
             }
+
         } catch (Exception er) {
+
             plugin.logException(er);
+
         }
+
     }
+
 }

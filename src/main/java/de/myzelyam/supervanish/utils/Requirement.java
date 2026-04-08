@@ -9,5 +9,7 @@
 package de.myzelyam.supervanish.utils;
 
 public interface Requirement<T> {
+
     boolean fulfilledBy(T testSubject);
+
 }

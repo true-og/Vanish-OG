@@ -10,14 +10,22 @@ package de.myzelyam.supervanish.hooks;
 
 public class InvalidPluginHookException extends RuntimeException {
 
+    private static final long serialVersionUID = 1L;
+
     public InvalidPluginHookException() {
+
     }
 
     public InvalidPluginHookException(String message) {
+
         super(message);
+
     }
 
     public InvalidPluginHookException(Throwable cause) {
+
         super(cause);
+
     }
+
 }
