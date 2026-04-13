@@ -38,30 +38,12 @@ public class RecreateFiles extends SubCommand {
 
         }
 
-        String files;
-        String changes;
-        if (plugin.getConfigMgr().isSettingsUpdateRequired() && plugin.getConfigMgr().isMessagesUpdateRequired()) {
-
-            files = "the config and the messages file";
-            changes = "all settings and messages";
-
-        } else if (plugin.getConfigMgr().isSettingsUpdateRequired()) {
-
-            files = "the config";
-            changes = "all settings";
-
-        } else {
-
-            files = "the messages file";
-            changes = "all messages";
-
-        }
+        String files = "the messages file";
+        String changes = "all messages";
 
         if (args.length != 2) {
 
-            if (!plugin.getConfigMgr().isSettingsUpdateRequired()
-                    && !plugin.getConfigMgr().isMessagesUpdateRequired())
-            {
+            if (!plugin.getConfigMgr().isMessagesUpdateRequired()) {
 
                 plugin.sendMessage(p, "NoConfigUpdateAvailable", p);
                 return;
@@ -77,9 +59,7 @@ public class RecreateFiles extends SubCommand {
 
         if (StringUtils.equalsIgnoreCase("confirm", args[1]) || StringUtils.equalsIgnoreCase(args[1], "force")) {
 
-            if (!plugin.getConfigMgr().isSettingsUpdateRequired() && !plugin.getConfigMgr().isMessagesUpdateRequired()
-                    && !StringUtils.equalsIgnoreCase(args[1], "force"))
-            {
+            if (!plugin.getConfigMgr().isMessagesUpdateRequired() && !StringUtils.equalsIgnoreCase(args[1], "force")) {
 
                 plugin.sendMessage(p, "NoConfigUpdateAvailable", p);
                 return;
@@ -94,8 +74,8 @@ public class RecreateFiles extends SubCommand {
             }
 
             // Delete necessary files.
-            boolean success = false;
-            if (plugin.getConfigMgr().isSettingsUpdateRequired() || StringUtils.equalsIgnoreCase(args[1], "force")) {
+            boolean success = true;
+            if (StringUtils.equalsIgnoreCase(args[1], "force")) {
 
                 final File file = new File(plugin.getDataFolder().getPath() + File.separator + "config.yml");
                 success = file.delete();
@@ -143,14 +123,9 @@ public class RecreateFiles extends SubCommand {
         } else if (StringUtils.equalsIgnoreCase("dismiss", args[1])) {
 
             final String currentVersion = plugin.getPluginMeta().getVersion();
-            final boolean isDismissed = plugin.getPlayerData().getBoolean(
-                    "PlayerData." + (p instanceof Player ? ((Player) p).getUniqueId().toString() : "CONSOLE")
-                            + ".dismissed." + currentVersion.replace(".", "_"),
-                    false);
-            plugin.getPlayerData()
-                    .set("PlayerData." + (p instanceof Player ? ((Player) p).getUniqueId().toString() : "CONSOLE")
-                            + ".dismissed." + currentVersion.replace(".", "_"), !isDismissed);
-            plugin.getConfigMgr().getPlayerDataFile().save();
+            final String dismissId = p instanceof Player ? ((Player) p).getUniqueId().toString() : "CONSOLE";
+            final boolean isDismissed = plugin.getVanishStateMgr().isDismissed(dismissId, currentVersion);
+            plugin.getVanishStateMgr().setDismissed(dismissId, currentVersion, !isDismissed);
             if (!isDismissed) {
 
                 plugin.sendMessage(p, "DismissedRecreationWarning", p);

@@ -26,27 +26,13 @@ public class FileMgr {
 
     }
 
-    public PluginFile<?> addFile(String name, FileType type) {
+    public PluginFile<?> addFile(String name) {
 
         if (name == null)
             throw new IllegalArgumentException("The file name cannot be null!");
-        if (type == FileType.STORAGE) {
-
-            StorageFile file = new StorageFile(name, (SuperVanish) plugin);
-            files.put(name, file);
-            return file;
-
-        } else if (type == FileType.CONFIG) {
-
-            ConfigurableFile file = new ConfigurableFile(name, (SuperVanish) plugin);
-            files.put(name, file);
-            return file;
-
-        } else {
-
-            throw new IllegalArgumentException("The FileType cannot be null!");
-
-        }
+        ConfigurableFile file = new ConfigurableFile(name, (SuperVanish) plugin);
+        files.put(name, file);
+        return file;
 
     }
 
@@ -65,10 +51,6 @@ public class FileMgr {
         for (String fileName : files.keySet())
             reloadFile(fileName);
 
-    }
-
-    public enum FileType {
-        STORAGE, CONFIG
     }
 
 }

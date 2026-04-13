@@ -1,11 +1,11 @@
-# SuperVanish v${project.version} - Messages
+# Vanish-OG v${project.version} - Messages
 #
 # Information:
 # <..> means that .. is required; [..] means that .. is optional and can be left out; | inside [] or <> stands for 'OR'
 # You can use the & character for color codes; Example: '&cThe color of this text would be red!'
 # You can use #XXXXXX for HEX color codes. Example: '#663EF6This text would be purple!'
 # Use MiniPlaceholder-style formatting. Legacy %placeholder% syntax is no longer supported.
-# SuperVanish inline tags:
+# Vanish-OG inline tags:
 #   <sv_player_name>, <sv_player_display_name>, <sv_player_tab_name>
 #   <sv_player_prefix>, <sv_player_suffix>, <sv_player_group>, <sv_player_nick>
 #   <sv_other_name>, <time>, <files>, <changes>, <death_message>
@@ -13,7 +13,7 @@
 # Some messages allow different, unique variables too
 #
 # NOTE: Utilities-OG expands MiniPlaceholders in these messages, so you can also use
-# its own global, audience, relational, and SuperVanish placeholders here.
+# its own global, audience, relational, and Vanish-OG placeholders here.
 #
 # Empty messages will not be sent
 # Using \n starts a new line
@@ -40,7 +40,7 @@ Messages:
   CannotHideOtherPlayer: '&cYou''re not allowed to change <sv_other_name>''s visibility!'
   AlreadyInvisibleMessage: '&cPlayer &e<sv_other_name>&c is already invisible!'
   AlreadyVisibleMessage: '&cPlayer &e<sv_other_name>&c is already visible!'
-  PluginReloaded: '&aSuccessfully reloaded SuperVanish (<time>ms)!'
+  PluginReloaded: '&aSuccessfully reloaded Vanish-OG (<time>ms)!'
   InvalidSender: '&cYou must be a player to execute this command!'
   PlayerNotOnline: '&cThat player is not online!'
   PlayerNonExistent: '&cThat player doesn''t exist!'
@@ -48,8 +48,8 @@ Messages:
   ToggledPickingUpItemsOff: '&ePicking up items is now turned &cOFF&e.'
   UpdateWarning: '&cWarning! Recreating <files> resets <changes>. Please use &e/sv recreatefiles confirm&c if you''d like to continue.'
   RecreatedConfig: '&aSuccessfully recreated <files>! Please check <changes>.'
-  NoConfigUpdateAvailable: '&eNo SuperVanish files need to be recreated.'
-  RecreationRequiredMsg: '&c[SV] Some SuperVanish files need to be recreated. Use &e/sv recreatefiles&c to recreate them, or use /sv recreatefiles dismiss&c to dismiss this message.'
+  NoConfigUpdateAvailable: '&eNo Vanish-OG files need to be recreated.'
+  RecreationRequiredMsg: '&c[SV] Some Vanish-OG files need to be recreated. Use &e/sv recreatefiles&c to recreate them, or use /sv recreatefiles dismiss&c to dismiss this message.'
   DismissedRecreationWarning: '&eYou are no longer receiving notifications about this recreation.'
   UndismissedRecreationWarning: '&eYou are now receiving notifications about this recreation.'
   PrintedStacktrace: '&eSuccessfully created a stacktrace, see console!'
@@ -58,7 +58,7 @@ Messages:
   BlockBreakDenied: '&c[SV] You can''t break blocks in vanish!'
   DynmapFakeJoin: '<sv_player_display_name> joined'
   DynmapFakeQuit: '<sv_player_display_name> quit'
-  HelpHeader: "&a<---------------&e SuperVanish-Help &a--------------->"
+  HelpHeader: "&a<---------------&e Vanish-OG Help &a--------------->"
   HelpFormat: "&6<usage> &7- &b<description> &c(<permission>)"
   PlaceholderIsVanishedYes: "Yes"
   PlaceholderIsVanishedNo: "No"

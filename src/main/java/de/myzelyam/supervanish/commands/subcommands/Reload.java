@@ -40,7 +40,7 @@ public class Reload extends SubCommand {
         plugin.reload();
         if (!Bukkit.getPluginManager().isPluginEnabled(plugin)) {
 
-            final String failMsg = "&cERROR: Failed to reload SuperVanish since it failed to restart itself. "
+            final String failMsg = "&cERROR: Failed to reload Vanish-OG since it failed to restart itself. "
                     + "More information is in the console. (" + (System.currentTimeMillis() - before) + "ms)";
             if (p instanceof Player player) {
 

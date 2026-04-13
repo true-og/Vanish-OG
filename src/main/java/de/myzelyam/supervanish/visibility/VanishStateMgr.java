@@ -38,4 +38,18 @@ public abstract class VanishStateMgr {
 
     public abstract Collection<UUID> getOnlineVanishedPlayers();
 
+    public abstract UUID getVanishedUUIDFromName(String name);
+
+    public abstract boolean getItemPickUps(UUID uuid, boolean defaultValue);
+
+    public abstract void setItemPickUps(UUID uuid, boolean value);
+
+    public abstract boolean isDismissed(String id, String version);
+
+    public abstract void setDismissed(String id, String version, boolean value);
+
+    public void close() {
+
+    }
+
 }

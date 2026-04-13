@@ -1,4 +1,4 @@
-# SuperVanish v${project.version} - Configuration
+# Vanish-OG v${project.version} - Configuration
 
 ############# Invisibility Features ##############
 InvisibilityFeatures:
@@ -142,7 +142,7 @@ HookOptions:
 ############# Compatibility Options ##############
 CompatibilityOptions:
   # This section is for advanced users only!
-  # The event priority which SuperVanish should use for the specific event.
+  # The event priority which Vanish-OG should use for the specific event.
   # Allowed values are LOWEST, LOW, NORMAL, HIGH, HIGHEST and MONITOR
   # Higher priorities might override other plugins while lower ones might not
 
@@ -151,5 +151,12 @@ CompatibilityOptions:
   # The quit listener still needs to run after some plugins that adjust vanish state on logout.
   PlayerQuitEventPriority: HIGHEST
 
-################# Do Not Touch ###################
-ConfigVersion: ${project.version}
+################## KeyDB Options ##################
+KeyDB:
+  # Connection URI for KeyDB/Redis. If left empty, vanish state is stored in data.yml instead.
+  # Format: redis://[password@]host[:port][/database]
+  # Examples:
+  #   redis://localhost:6379
+  #   redis://password@keydb.example.com:6379/0
+  URI: ""
+

@@ -14,7 +14,6 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
-import com.google.common.collect.ImmutableList;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.visibility.hiders.PlayerHider;
 import org.bukkit.entity.Player;
@@ -58,10 +57,22 @@ public class PlayerInfoModule extends PacketAdapter {
         event.setPacket(event.getPacket().shallowClone());
         try {
 
-            List<PlayerInfoData> infoDataList = new ArrayList<>(event.getPacket().getPlayerInfoDataLists().read(0));
+            List<PlayerInfoData> rawList = event.getPacket().getPlayerInfoDataLists().read(0);
+            if (rawList == null)
+                return;
+            List<PlayerInfoData> infoDataList = new ArrayList<>(rawList);
 
             Player receiver = event.getPlayer();
-            for (PlayerInfoData infoData : ImmutableList.copyOf(infoDataList)) {
+            if (receiver == null)
+                return;
+            for (PlayerInfoData infoData : new ArrayList<>(infoDataList)) {
+
+                if (infoData == null) {
+
+                    infoDataList.remove(infoData);
+                    continue;
+
+                }
 
                 UUID uuid = extractUUID(infoData);
                 if (uuid == null)
@@ -89,13 +100,14 @@ public class PlayerInfoModule extends PacketAdapter {
                 if (errorLogged)
                     return;
                 plugin.logException(e);
-                plugin.getLogger().warning("IMPORTANT: Please make sure that you are using the latest "
-                        + "dev-build of ProtocolLib and that your server is up-to-date! This error likely "
-                        + "happened inside of ProtocolLib code which is out of SuperVanish's control. It's part "
-                        + "of an optional invisibility module and can be removed safely by disabling "
-                        + "ModifyTablistPackets in the config. Please report this "
-                        + "error if you can reproduce it on an up-to-date server with only latest "
-                        + "ProtocolLib and latest SV installed.");
+                plugin.getLogger()
+                        .warning("IMPORTANT: Please make sure that you are using the latest "
+                                + "dev-build of ProtocolLib and that your server is up-to-date! This error likely "
+                                + "happened inside of ProtocolLib code which is out of Vanish-OG's control. It's part "
+                                + "of an optional invisibility module and can be removed safely by disabling "
+                                + "ModifyTablistPackets in the config. Please report this "
+                                + "error if you can reproduce it on an up-to-date server with only latest "
+                                + "ProtocolLib and latest Vanish-OG installed.");
                 errorLogged = true;
 
             }

@@ -9,12 +9,9 @@
 package de.myzelyam.supervanish.config;
 
 import de.myzelyam.supervanish.SuperVanish;
-import net.trueog.utilitiesog.UtilitiesOG;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.List;
-import java.util.Collections;
 import java.util.logging.Level;
 
 import static de.myzelyam.supervanish.SuperVanish.*;
@@ -23,14 +20,11 @@ public class ConfigMgr {
 
     private final SuperVanish plugin;
     private final FileMgr fileMgr;
-    private boolean settingsUpdateRequired;
     private boolean messagesUpdateRequired;
     private FileConfiguration settings;
     private FileConfiguration messages;
-    private FileConfiguration playerData;
     private ConfigurableFile messagesFile;
     private ConfigurableFile settingsFile;
-    private StorageFile playerDataFile;
 
     public ConfigMgr(SuperVanish plugin) {
 
@@ -42,20 +36,11 @@ public class ConfigMgr {
     public void prepareFiles() {
 
         // messages
-        messagesFile = (ConfigurableFile) fileMgr.addFile("messages", FileMgr.FileType.CONFIG);
+        messagesFile = (ConfigurableFile) fileMgr.addFile("messages");
         messages = messagesFile.getConfig();
         // settings
-        settingsFile = (ConfigurableFile) fileMgr.addFile("config", FileMgr.FileType.CONFIG);
+        settingsFile = (ConfigurableFile) fileMgr.addFile("config");
         settings = settingsFile.getConfig();
-        // data
-        playerDataFile = (StorageFile) fileMgr.addFile("data", FileMgr.FileType.STORAGE);
-        playerData = playerDataFile.getConfig();
-        playerData.addDefault("InvisiblePlayers", Collections.emptyList());
-        playerData.options().copyDefaults(true);
-        playerData.options().setHeader(List.of("SuperVanish v" + plugin.getPluginMeta().getVersion() + " - Data file"));
-        playerDataFile.save();
-
-        checkFilesForLeftOvers();
 
     }
 
@@ -63,31 +48,18 @@ public class ConfigMgr {
 
         try {
 
-            String currentSettingsVersion = settings.getString("ConfigVersion");
             String newestVersion = plugin.getPluginMeta().getVersion();
             String currentMessagesVersion = messages.getString("MessagesVersion");
-            messagesUpdateRequired = fileRequiresRecreation(currentMessagesVersion, false);
-            settingsUpdateRequired = fileRequiresRecreation(currentSettingsVersion, true);
-            if (newestVersion.equals(currentSettingsVersion))
-                settingsUpdateRequired = false;
+            messagesUpdateRequired = fileRequiresRecreation(currentMessagesVersion);
             if (newestVersion.equals(currentMessagesVersion))
                 messagesUpdateRequired = false;
-            if (settingsUpdateRequired || messagesUpdateRequired) {
+            if (messagesUpdateRequired) {
 
                 String currentVersion = plugin.getPluginMeta().getVersion();
-                boolean isDismissed = playerData
-                        .getBoolean("PlayerData.CONSOLE.dismissed." + currentVersion.replace(".", "_"), false);
+                boolean isDismissed = plugin.getVanishStateMgr().isDismissed("CONSOLE", currentVersion);
                 if (!isDismissed)
-                    plugin.log(Level.WARNING, "At least one config file needs to be recreated. "
-                            + "Use '/sv recreatefiles' to regenerate it.");
-
-            }
-
-            if (currentSettingsVersion.startsWith("1.5.") || currentSettingsVersion.startsWith("1.4.")) {
-
-                UtilitiesOG.logToConsole("[SuperVanish]",
-                        "<yellow>You have a very old config file. Your settings will not work until you "
-                                + "regenerate your SV files using /sv recreatefiles.");
+                    plugin.log(Level.WARNING,
+                            "Messages file needs to be recreated. " + "Use '/sv recreatefiles' to regenerate it.");
 
             }
 
@@ -99,11 +71,11 @@ public class ConfigMgr {
 
     }
 
-    private boolean fileRequiresRecreation(String currentVersion, boolean isSettingsFile) {
+    private boolean fileRequiresRecreation(String currentVersion) {
 
         if (currentVersion == null)
             return true;
-        for (String ignoredVersion : isSettingsFile ? NON_REQUIRED_SETTINGS_UPDATES : NON_REQUIRED_MESSAGES_UPDATES) {
+        for (String ignoredVersion : NON_REQUIRED_MESSAGES_UPDATES) {
 
             if (currentVersion.equalsIgnoreCase(ignoredVersion))
                 return false;
@@ -117,12 +89,6 @@ public class ConfigMgr {
     public FileMgr getFileMgr() {
 
         return fileMgr;
-
-    }
-
-    public boolean isSettingsUpdateRequired() {
-
-        return settingsUpdateRequired;
 
     }
 
@@ -141,12 +107,6 @@ public class ConfigMgr {
     public FileConfiguration getMessages() {
 
         return messages;
-
-    }
-
-    public FileConfiguration getPlayerData() {
-
-        return playerData;
 
     }
 
@@ -171,12 +131,6 @@ public class ConfigMgr {
     public ConfigurableFile getSettingsFile() {
 
         return settingsFile;
-
-    }
-
-    public StorageFile getPlayerDataFile() {
-
-        return playerDataFile;
 
     }
 

@@ -122,13 +122,14 @@ public class TabCompleteModule extends PacketAdapter {
                 if (errorLogged)
                     return;
                 plugin.logException(e);
-                plugin.getLogger().warning("IMPORTANT: Please make sure that you are using the latest "
-                        + "dev-build of ProtocolLib and that your server is up-to-date! This error likely "
-                        + "happened inside of ProtocolLib code which is out of SuperVanish's control. It's part "
-                        + "of an optional invisibility module and can be removed safely by disabling "
-                        + "ModifyTabCompletePackets in the config. Please report this "
-                        + "error if you can reproduce it on an up-to-date server with only latest "
-                        + "ProtocolLib and latest SV installed.");
+                plugin.getLogger()
+                        .warning("IMPORTANT: Please make sure that you are using the latest "
+                                + "dev-build of ProtocolLib and that your server is up-to-date! This error likely "
+                                + "happened inside of ProtocolLib code which is out of Vanish-OG's control. It's part "
+                                + "of an optional invisibility module and can be removed safely by disabling "
+                                + "ModifyTabCompletePackets in the config. Please report this "
+                                + "error if you can reproduce it on an up-to-date server with only latest "
+                                + "ProtocolLib and latest Vanish-OG installed.");
                 errorLogged = true;
 
             }

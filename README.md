@@ -14,6 +14,7 @@ Built for **Purpur 1.19.4**. Clients from **Minecraft 1.8 through 1.21.11** can 
 - **OpenInv support.** If installed, Vanish-OG hands off chest viewing to OpenInv so staff never enter spectator mode and can't get stuck there after a crash.
 - **MiniPlaceholders support** (via Utilities-OG) for use in chat, tab, and hologram plugins.
 - **Safer chest peeking.** Staff no longer occasionally fall through the floor when finishing a peek. Pair with [WGamemode](https://github.com/true-og/WGamemode) to auto-restore gamemodes after crashes if OpenInv is not installed.
+- **KeyDB-backed storage.** Vanish state and player preferences are stored in KeyDB (Redis-compatible) via the Lettuce client instead of flat YAML files. Requires a `KeyDB.URI` in `config.yml`.
 - **Removed old clutter.** Deprecated functions are removed and the code is updated for java 17 conventions.
 
 ### Chat-OG handles some events that used to be handled by SuperVanish
@@ -45,37 +46,25 @@ Main command: `/vanish` (also `/v`, `/sv`, `/supervanish`).
 ### State queries
 
 - `VanishAPI.getInvisiblePlayers()`
-  Returns the UUIDs of all online vanished players. Run this on the main server thread.
+  Returns the UUIDs of all online vanished players.
 - `VanishAPI.getAllInvisiblePlayers()`
-  Returns the UUIDs of all vanished players, including offline players stored in `data.yml`. Run this on the main server thread.
-- `VanishAPI.isPlayerVanished(Player player)`
-  Preferred asynchronous check for an online player. Safe to call from either thread. The returned `CompletableFuture<Boolean>` completes off the main thread.
-- `VanishAPI.isUUIDVanished(UUID uuid)`
-  Preferred asynchronous check for any player UUID. Safe to call from either thread. The returned `CompletableFuture<Boolean>` completes off the main thread.
-
-If you touch Bukkit APIs in an async completion callback, switch back to the server thread first.
+  Returns the UUIDs of all vanished players, including offline players stored in KeyDB.
+- `VanishAPI.isVanished(UUID uuid)`
+  Checks if a player is vanished by querying KeyDB. Returns `boolean`.
 
 Java:
 
 ```java
-VanishAPI.isUUIDVanished(player.getUniqueId()).thenAccept(vanished ->
-    Bukkit.getScheduler().runTask(plugin, () -> {
-        if (vanished) {
-            UtilitiesOG.trueogMessage(player, "You are vanished.");
-        }
-    })
-);
+if (VanishAPI.isVanished(player.getUniqueId())) {
+    UtilitiesOG.trueogMessage(player, "You are vanished.");
+}
 ```
 
 Kotlin:
 
 ```kotlin
-VanishAPI.isUUIDVanished(player.uniqueId).thenAccept { vanished ->
-    Bukkit.getScheduler().runTask(plugin) {
-        if (vanished) {
-            UtilitiesOG.trueogMessage(player, "You are vanished.")
-        }
-    }
+if (VanishAPI.isVanished(player.uniqueId)) {
+    UtilitiesOG.trueogMessage(player, "You are vanished.")
 }
 ```
 
@@ -116,8 +105,6 @@ VanishAPI.showPlayer(target)
   Returns `config.yml`. Main thread only; treat the returned `FileConfiguration` as Bukkit-owned mutable state.
 - `VanishAPI.getMessages()`
   Returns `messages.yml`. Main thread only; treat the returned `FileConfiguration` as Bukkit-owned mutable state.
-- `VanishAPI.getPlayerData()`
-  Returns the persistent player storage file (`data.yml` / player data config). Main thread only.
 - `VanishAPI.reloadConfig()`
   Reloads the plugin. Main thread only.
 - `VanishAPI.getPlugin()`

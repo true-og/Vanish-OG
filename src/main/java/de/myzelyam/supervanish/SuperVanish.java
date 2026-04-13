@@ -44,8 +44,9 @@ import de.myzelyam.supervanish.listeners.WorldChangeListener;
 import de.myzelyam.supervanish.utils.ExceptionLogger;
 import de.myzelyam.supervanish.utils.VersionUtil;
 import de.myzelyam.supervanish.visibility.ActionBarMgr;
-import de.myzelyam.supervanish.visibility.FileVanishStateMgr;
+import de.myzelyam.supervanish.visibility.KeyDBVanishStateMgr;
 import de.myzelyam.supervanish.visibility.ServerListPacketListener;
+import de.myzelyam.supervanish.visibility.VanishStateMgr;
 import de.myzelyam.supervanish.visibility.VisibilityChanger;
 import de.myzelyam.supervanish.visibility.hiders.PreventionHider;
 import net.kyori.adventure.text.Component;
@@ -54,11 +55,6 @@ import net.trueog.utilitiesog.UtilitiesOG;
 
 public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
-    public static final String[] NON_REQUIRED_SETTINGS_UPDATES = { "6.0.0", "6.0.1", "6.0.2", "6.0.3", "6.0.4", "6.0.5",
-            "6.1.0", "6.1.1", "6.1.2", "6.1.3", "6.1.4", "6.1.5", "6.1.6", "6.1.7", "6.1.8", "6.2.0", "6.2.1", "6.2.2",
-            "6.2.3", "6.2.4", "6.2.5", "6.2.6", "6.2.7", "6.2.8", "6.2.9", "6.2.10", "6.2.11", "6.2.12", "6.2.13",
-            "6.2.14", "6.2.15", "6.2.16", "6.2.17", "6.2.18", "6.2.19", "6.2.20" };
-
     public static final String[] NON_REQUIRED_MESSAGES_UPDATES = { "6.0.0", "6.0.1", "6.0.2", "6.0.3", "6.0.4", "6.0.5",
             "6.1.0", "6.1.1", "6.1.2", "6.1.3", "6.1.4", "6.1.5", "6.1.6", "6.1.7", "6.1.8", "6.2.0", "6.2.1", "6.2.2",
             "6.2.3", "6.2.4", "6.2.5", "6.2.6", "6.2.7", "6.2.8", "6.2.9", "6.2.10", "6.2.11", "6.2.12", "6.2.13",
@@ -66,7 +62,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
     private boolean useProtocolLib;
     private ActionBarMgr actionBarMgr;
-    private FileVanishStateMgr vanishStateMgr;
+    private VanishStateMgr vanishStateMgr;
     private VersionUtil versionUtil;
     private ConfigMgr configMgr;
     private FeatureMgr featureMgr;
@@ -86,7 +82,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
             useProtocolLib = getServer().getPluginManager().isPluginEnabled("ProtocolLib");
             if (!useProtocolLib) {
 
-                log(Level.INFO, "Please install ProtocolLib to be able to use all SuperVanish features: "
+                log(Level.INFO, "Please install ProtocolLib to be able to use all Vanish-OG features: "
                         + "https://www.spigotmc.org/resources/protocollib.1997/");
 
             }
@@ -97,7 +93,9 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
             layeredPermissionChecker = new LayeredPermissionChecker(this);
             command = new VanishCommand(this);
             versionUtil = new VersionUtil(this);
-            vanishStateMgr = new FileVanishStateMgr(this);
+            vanishStateMgr = new KeyDBVanishStateMgr(this, getSettings().getString("KeyDB.URI"));
+            configMgr.checkFilesForLeftOvers();
+
             visibilityChanger = new VisibilityChanger(new PreventionHider(this), this);
             if (versionUtil.isOneDotXOrHigher(8) && useProtocolLib) {
 
@@ -149,6 +147,12 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
             }
 
+            if (vanishStateMgr != null) {
+
+                vanishStateMgr.close();
+
+            }
+
             vanishPlayers.clear();
             VanishAPI.setPlugin(null);
 
@@ -174,8 +178,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
         Bukkit.getOnlinePlayers().forEach((Player player) -> {
 
-            final boolean itemPickUps = getPlayerData().getBoolean(
-                    "PlayerData." + player.getUniqueId() + ".itemPickUps",
+            final boolean itemPickUps = vanishStateMgr.getItemPickUps(player.getUniqueId(),
                     getSettings().getBoolean("InvisibilityFeatures.DefaultPickUpItemsOption"));
             final boolean vanished = vanishStateMgr.isVanished(player.getUniqueId());
             createVanishPlayer(player, itemPickUps);
@@ -316,7 +319,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
         }
 
         // ensure that there is always a vanish player
-        final boolean itemPickUps = getPlayerData().getBoolean("PlayerData." + player.getUniqueId() + ".itemPickUps",
+        final boolean itemPickUps = vanishStateMgr.getItemPickUps(player.getUniqueId(),
                 getSettings().getBoolean("InvisibilityFeatures.DefaultPickUpItemsOption"));
         final VanishPlayer vanishPlayer = new VanishPlayer(player, this, itemPickUps);
         vanishPlayers.add(vanishPlayer);
@@ -405,12 +408,6 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
     }
 
-    public FileConfiguration getPlayerData() {
-
-        return configMgr.getPlayerData();
-
-    }
-
     @Override
     public FileConfiguration getConfig() {
 
@@ -452,7 +449,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
     }
 
     @Override
-    public FileVanishStateMgr getVanishStateMgr() {
+    public VanishStateMgr getVanishStateMgr() {
 
         return vanishStateMgr;
 

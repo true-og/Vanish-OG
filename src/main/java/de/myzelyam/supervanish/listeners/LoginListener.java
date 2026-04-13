@@ -37,7 +37,7 @@ public class LoginListener implements Listener {
                 return;
             final Player p = e.getPlayer();
             boolean vanished = plugin.getVanishStateMgr().isVanished(p.getUniqueId());
-            boolean itemPickUps = plugin.getPlayerData().getBoolean("PlayerData." + p.getUniqueId() + ".itemPickUps",
+            boolean itemPickUps = plugin.getVanishStateMgr().getItemPickUps(p.getUniqueId(),
                     plugin.getSettings().getBoolean("InvisibilityFeatures.DefaultPickUpItemsOption"));
             plugin.createVanishPlayer(p, itemPickUps);
             if (vanished && plugin.getSettings().getBoolean("VanishStateFeatures.CheckPermissionOnLogin", false)

@@ -64,7 +64,7 @@ public class VanishOther extends SubCommand {
             if (target == null) {
 
                 offline = true;
-                uuid = plugin.getVanishStateMgr().getVanishedUUIDFromNameOnFile(name);
+                uuid = plugin.getVanishStateMgr().getVanishedUUIDFromName(name);
                 if (uuid == null) {
 
                     plugin.sendMessage(sender, "PlayerNonExistent", sender, name);

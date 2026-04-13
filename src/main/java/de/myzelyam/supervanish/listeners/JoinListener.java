@@ -89,13 +89,12 @@ public class JoinListener implements EventExecutor, Listener {
                 // not necessarily vanished:
                 // recreate files msg
                 if ((p.hasPermission("sv.recreatecfg") || p.hasPermission("sv.recreatefiles"))
-                        && (plugin.getConfigMgr().isSettingsUpdateRequired()
-                                || plugin.getConfigMgr().isMessagesUpdateRequired()))
+                        && plugin.getConfigMgr().isMessagesUpdateRequired())
                 {
 
                     String currentVersion = plugin.getPluginMeta().getVersion();
-                    boolean isDismissed = plugin.getPlayerData().getBoolean(
-                            "PlayerData." + p.getUniqueId() + ".dismissed." + currentVersion.replace(".", "_"), false);
+                    boolean isDismissed = plugin.getVanishStateMgr().isDismissed(p.getUniqueId().toString(),
+                            currentVersion);
                     if (!isDismissed)
                         new BukkitRunnable() {
 

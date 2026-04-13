@@ -11,12 +11,10 @@ package de.myzelyam.api.vanish;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.utils.Validation;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 import java.util.List;
 import java.util.UUID;
 
@@ -48,31 +46,15 @@ public class VanishAPI {
     }
 
     /**
-     * Asynchronously checks if an online player is currently vanished.
-     *
-     * @param p - the player.
-     * @return A future that completes with TRUE if the player is vanished, FALSE
-     *         otherwise.
-     */
-    public static CompletableFuture<Boolean> isPlayerVanished(Player p) {
-
-        Validation.checkNotNull("Player cannot be null!", p);
-        return isUUIDVanished(p.getUniqueId());
-
-    }
-
-    /**
-     * Asynchronously checks if a player is vanished, online or offline.
+     * Checks if a player is vanished by querying KeyDB.
      *
      * @param uuid - the player's UUID.
-     * @return A future that completes with TRUE if the player is vanished, FALSE
-     *         otherwise.
+     * @return TRUE if the player is vanished, FALSE otherwise.
      */
-    public static CompletableFuture<Boolean> isUUIDVanished(UUID uuid) {
+    public static boolean isVanished(UUID uuid) {
 
         Validation.checkNotNull("UUID cannot be null!", uuid);
-        return CompletableFuture.supplyAsync(() -> PLUGIN.getVanishStateMgr().isVanished(uuid),
-                runnable -> Bukkit.getScheduler().runTaskAsynchronously(PLUGIN, runnable));
+        return PLUGIN.getVanishStateMgr().isVanished(uuid);
 
     }
 
@@ -123,12 +105,6 @@ public class VanishAPI {
     public static FileConfiguration getMessages() {
 
         return PLUGIN.getMessages();
-
-    }
-
-    public static FileConfiguration getPlayerData() {
-
-        return PLUGIN.getPlayerData();
 
     }
 

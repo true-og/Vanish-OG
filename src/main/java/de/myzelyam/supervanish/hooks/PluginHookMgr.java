@@ -83,7 +83,7 @@ public class PluginHookMgr implements Listener {
 
             if (er.getMessage() != null && er.getMessage().contains("Unable to find handler list for event")) {
 
-                this.plugin.log(Level.WARNING, "" + er.getMessage() + "; This is not an issue with SuperVanish");
+                this.plugin.log(Level.WARNING, "" + er.getMessage() + "; This is not an issue with Vanish-OG");
                 return;
 
             } else if (er.getCause() != null && er.getCause().getMessage() != null
@@ -91,7 +91,7 @@ public class PluginHookMgr implements Listener {
             {
 
                 this.plugin.log(Level.WARNING,
-                        "" + er.getCause().getMessage() + "; This is not an issue with SuperVanish");
+                        "" + er.getCause().getMessage() + "; This is not an issue with Vanish-OG");
                 return;
 
             }

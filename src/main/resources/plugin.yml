@@ -1,4 +1,4 @@
-name: SuperVanish-OG
+name: Vanish-OG
 main: de.myzelyam.supervanish.SuperVanish
 authors: [MyzelYam, NotAlexNoyle]
 description: Advanced /vanish plugin which makes other players think that you're not on the server
@@ -20,7 +20,7 @@ softdepend:
 commands:
   sv:
     usage: /sv
-    description: SuperVanish's main command
+    description: Vanish-OG's main command
     aliases: [supervanish, v, vanish]
 permissions:
   sv.*:
@@ -42,11 +42,11 @@ permissions:
       sv.damage: true
       sv.stacktrace: true
       sv.silentchest: true
-    description: Grants you all SuperVanish permissions
+    description: Grants you all Vanish-OG permissions
   supervanish.*:
     children:
       sv.*: true
-    description: Grants you all SuperVanish permissions
+    description: Grants you all Vanish-OG permissions
   sv.see:
     description: You can see other vanished players
   sv.notoggle:

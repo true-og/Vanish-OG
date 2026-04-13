@@ -22,7 +22,7 @@ java {
 /* ----------------------------- Metadata ------------------------------ */
 group = "de.myzelyam.vanishog" // Declare bundle identifier.
 
-version = "6.2.22" // Declare plugin version (will be in .jar).
+version = "1.1" // Declare plugin version (will be in .jar).
 
 val apiVersion = "1.13" // Declare minecraft server target version.
 
@@ -65,6 +65,9 @@ dependencies {
 
     // ProtocolLib (local jar in libs/).
     compileOnly(files("libs/ProtocolLib-5.0.jar"))
+
+    // Lettuce API (for KeyDB).
+    implementation("io.lettuce:lettuce-core:7.5.1.RELEASE") // Import the Lettuce API for keydb.
 
     // Citizens API.
     compileOnly("net.citizensnpcs:citizensapi:2.0.28-SNAPSHOT")

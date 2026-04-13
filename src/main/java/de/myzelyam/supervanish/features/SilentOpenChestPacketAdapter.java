@@ -149,11 +149,11 @@ public class SilentOpenChestPacketAdapter extends PacketAdapter {
                     silentOpenChest.plugin.getLogger()
                             .warning("IMPORTANT: Please make sure that you are using the latest "
                                     + "dev-build of ProtocolLib and that your server is up-to-date! This error likely "
-                                    + "happened inside of ProtocolLib code which is out of SuperVanish's control. It's part "
+                                    + "happened inside of ProtocolLib code which is out of Vanish-OG's control. It's part "
                                     + "of an optional feature module and can be removed safely by disabling "
                                     + "OpenChestsSilently in the config file. Please report this "
                                     + "error if you can reproduce it on an up-to-date server with only latest "
-                                    + "ProtocolLib and latest SV installed.");
+                                    + "ProtocolLib and latest Vanish-OG installed.");
                     suppressErrors = true;
 
                 }

@@ -23,7 +23,7 @@ public class ExceptionLogger {
                 plugin.log(loggingLevel, "Unknown exception occurred!");
             else
                 plugin.log(loggingLevel, "Printing information...");
-            if (plugin.getConfigMgr().isSettingsUpdateRequired() || plugin.getConfigMgr().isMessagesUpdateRequired()) {
+            if (plugin.getConfigMgr().isMessagesUpdateRequired()) {
 
                 if (realEx)
                     plugin.log(loggingLevel, "Your config files may need to be recreated. "
@@ -42,7 +42,7 @@ public class ExceptionLogger {
             StringBuilder plugins = new StringBuilder();
             for (Plugin pl : Bukkit.getServer().getPluginManager().getPlugins()) {
 
-                if (pl.getName().equalsIgnoreCase("SuperVanish"))
+                if (pl.getName().equalsIgnoreCase("Vanish-OG"))
                     continue;
                 plugins.append(pl.getName()).append(" v").append(pl.getPluginMeta().getVersion()).append(", ");
 
@@ -76,8 +76,7 @@ public class ExceptionLogger {
             e.printStackTrace();
             if (realEx) {
 
-                if (plugin.getConfigMgr().isSettingsUpdateRequired()
-                        || plugin.getConfigMgr().isMessagesUpdateRequired())
+                if (plugin.getConfigMgr().isMessagesUpdateRequired())
                     plugin.log(loggingLevel, "Your config files may need to be recreated. "
                             + "Running '/sv recreatefiles' might fix this problem.");
                 plugin.log(loggingLevel, "Please include this information");
