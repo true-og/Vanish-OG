@@ -61,7 +61,7 @@ dependencies {
     }
 
     // LuckPerms API (group, prefix, suffix lookups).
-    compileOnly("net.luckperms:api:5.5")
+    compileOnly("net.luckperms:api:5.5") // Import the LuckPerms API.
 
     // ProtocolLib (local jar in libs/).
     compileOnly(files("libs/ProtocolLib-5.0.jar"))
@@ -80,6 +80,10 @@ dependencies {
 
     // Import MiniPlaceholders API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
+
+    // SLF4J warning fix.
+    implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.
+    implementation("org.slf4j:slf4j-nop:2.0.17") // Provide a relocated no-op SLF4J backend to avoid provider warnings.
 
     // Mojang Brigadier (provided at runtime by Purpur).
     compileOnly("com.mojang:brigadier:1.0.18")
