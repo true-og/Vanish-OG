@@ -30,7 +30,7 @@ val apiVersion = "1.13" // Declare minecraft server target version.
 tasks.named<ProcessResources>("processResources") {
     val props = mapOf("version" to version, "apiVersion" to apiVersion)
     inputs.properties(props) // Indicates to rerun if version changes.
-    filesMatching("plugin.yml") { expand(props) }
+    filesMatching(listOf("plugin.yml", "config.yml", "messages.yml")) { expand(props) }
     from("LICENSE") { into("/") } // Bundle licenses into jarfiles.
 }
 

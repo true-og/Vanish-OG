@@ -1,4 +1,4 @@
-# Vanish-OG v${project.version} - Messages
+# Vanish-OG v${version} - Messages
 #
 # Information:
 # <..> means that .. is required; [..] means that .. is optional and can be left out; | inside [] or <> stands for 'OR'
@@ -64,4 +64,4 @@ Messages:
   PlaceholderIsVanishedNo: "No"
   PlaceholderVanishPrefix: '&a[V] &r'
   PlaceholderVanishSuffix: ' &r&a[V]'
-MessagesVersion: ${project.version}
+MessagesVersion: ${version}

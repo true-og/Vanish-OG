@@ -1,4 +1,4 @@
-# Vanish-OG v${project.version} - Configuration
+# Vanish-OG v${version} - Configuration
 
 ############# Invisibility Features ##############
 InvisibilityFeatures:
@@ -159,8 +159,7 @@ KeyDB:
   # Port number of the KeyDB server.
   Port: 6379
   # Password for the KeyDB server. Leave empty for no authentication.
-  # The variable ${KEYDB_PASSWORD" is interpreted by true-og/SubstAgent and is configurable by editing .env in your server root.
+  # The KEYDB_PASSWORD variable is interpreted by true-og/SubstAgent and is configurable by editing .env in your server root.
   Password: "^{KEYDB_PASSWORD}"
   # Database index to use (keep 0 unless you know what you are doing).
   Database: 0
-
