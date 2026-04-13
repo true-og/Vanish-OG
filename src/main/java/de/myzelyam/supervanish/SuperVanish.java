@@ -93,7 +93,9 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
             layeredPermissionChecker = new LayeredPermissionChecker(this);
             command = new VanishCommand(this);
             versionUtil = new VersionUtil(this);
-            vanishStateMgr = new KeyDBVanishStateMgr(this, getSettings().getString("KeyDB.URI"));
+            vanishStateMgr = new KeyDBVanishStateMgr(this, getSettings().getString("KeyDB.Host"),
+                    getSettings().getInt("KeyDB.Port"), getSettings().getString("KeyDB.Password"),
+                    getSettings().getInt("KeyDB.Database"));
             configMgr.checkFilesForLeftOvers();
 
             visibilityChanger = new VisibilityChanger(new PreventionHider(this), this);

@@ -21,6 +21,7 @@ import de.myzelyam.api.vanish.PlayerVanishStateChangeEvent;
 import de.myzelyam.supervanish.SuperVanish;
 
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.RedisURI;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 
@@ -36,11 +37,20 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
     private final StatefulRedisConnection<String, String> connection;
     private final RedisCommands<String, String> commands;
 
-    public KeyDBVanishStateMgr(SuperVanish plugin, String uri) {
+    public KeyDBVanishStateMgr(SuperVanish plugin, String host, int port, String password, int database) {
 
         super(plugin);
         this.plugin = plugin;
-        this.redisClient = RedisClient.create(uri);
+
+        RedisURI.Builder uriBuilder = RedisURI.builder().withHost(host).withPort(port).withDatabase(database);
+
+        if (password != null && !password.isEmpty()) {
+
+            uriBuilder.withPassword(password.toCharArray());
+
+        }
+
+        this.redisClient = RedisClient.create(uriBuilder.build());
         this.connection = redisClient.connect();
         this.commands = connection.sync();
 
