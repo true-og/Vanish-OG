@@ -102,6 +102,7 @@ tasks.shadowJar {
     exclude("io.github.miniplaceholders.*") // Exclude the MiniPlaceholders package from being shadowed.
     isEnableRelocation = true
     relocationPrefix = "${project.group}.shadow"
+    mergeServiceFiles()
     archiveClassifier.set("") // Use empty string instead of null.
     archiveBaseName.set(rootProject.name) // Vanish-OG-${version}.jar
     minimize()
