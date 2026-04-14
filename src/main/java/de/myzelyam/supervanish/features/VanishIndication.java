@@ -146,6 +146,7 @@ public class VanishIndication extends Feature {
                             List<PlayerInfoData> infoDataList = new ArrayList<>(
                                     event.getPacket().getPlayerInfoDataLists().read(0));
                             Player receiver = event.getPlayer();
+                            boolean modified = false;
                             for (PlayerInfoData infoData : ImmutableList.copyOf(infoDataList)) {
 
                                 try {
@@ -168,6 +169,7 @@ public class VanishIndication extends Feature {
                                                         EnumWrappers.NativeGameMode.SPECTATOR);
                                                 int index = infoDataList.indexOf(infoData);
                                                 infoDataList.set(index, newData);
+                                                modified = true;
 
                                             }
 
@@ -179,7 +181,11 @@ public class VanishIndication extends Feature {
 
                             }
 
-                            event.getPacket().getPlayerInfoDataLists().write(0, infoDataList);
+                            // Untouched packets must not be rewritten: writing back into
+                            // ClientboundPlayerInfoUpdatePacket on 1.19.3+ also rewrites its
+                            // final EnumSet<Action> field, which ProtocolLib cannot mutate.
+                            if (modified)
+                                event.getPacket().getPlayerInfoDataLists().write(0, infoDataList);
 
                         } catch (Exception | NoClassDefFoundError e) {
 

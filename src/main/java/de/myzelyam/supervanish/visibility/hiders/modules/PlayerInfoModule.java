@@ -60,16 +60,19 @@ public class PlayerInfoModule extends PacketAdapter {
             List<PlayerInfoData> rawList = event.getPacket().getPlayerInfoDataLists().read(0);
             if (rawList == null)
                 return;
-            List<PlayerInfoData> infoDataList = new ArrayList<>(rawList);
 
             Player receiver = event.getPlayer();
             if (receiver == null)
                 return;
+
+            List<PlayerInfoData> infoDataList = new ArrayList<>(rawList);
+            boolean modified = false;
             for (PlayerInfoData infoData : new ArrayList<>(infoDataList)) {
 
                 if (infoData == null) {
 
                     infoDataList.remove(infoData);
+                    modified = true;
                     continue;
 
                 }
@@ -80,14 +83,25 @@ public class PlayerInfoModule extends PacketAdapter {
                 if (hider.isHidden(uuid, receiver)) {
 
                     infoDataList.remove(infoData);
+                    modified = true;
 
                 }
+
+            }
+
+            if (!modified) {
+
+                // Untouched packets must not be rewritten: writing back into
+                // ClientboundPlayerInfoUpdatePacket on 1.19.3+ also rewrites its
+                // final EnumSet<Action> field, which ProtocolLib cannot mutate.
+                return;
 
             }
 
             if (infoDataList.isEmpty()) {
 
                 event.setCancelled(true);
+                return;
 
             }
 

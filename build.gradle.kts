@@ -30,7 +30,9 @@ val apiVersion = "1.13" // Declare minecraft server target version.
 tasks.named<ProcessResources>("processResources") {
     val props = mapOf("version" to version, "apiVersion" to apiVersion)
     inputs.properties(props) // Indicates to rerun if version changes.
-    filesMatching(listOf("plugin.yml", "config.yml", "messages.yml")) { expand(props) }
+    filesMatching(listOf("plugin.yml", "config.yml", "messages.yml")) {
+        expand(props) { escapeBackslash.set(true) } // Keep literal '\n' etc. intact in YAML comments/values.
+    }
     from("LICENSE") { into("/") } // Bundle licenses into jarfiles.
 }
 
@@ -105,7 +107,9 @@ tasks.shadowJar {
     mergeServiceFiles()
     archiveClassifier.set("") // Use empty string instead of null.
     archiveBaseName.set(rootProject.name) // Vanish-OG-${version}.jar
-    minimize()
+    minimize {
+        exclude(dependency("org.slf4j:slf4j-nop:.*")) // ServiceLoader-only; minimize() would drop NOPServiceProvider.
+    }
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.
