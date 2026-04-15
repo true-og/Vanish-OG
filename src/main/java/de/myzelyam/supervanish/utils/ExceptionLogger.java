@@ -13,6 +13,15 @@ public class ExceptionLogger {
 
     }
 
+    private static boolean isSensitiveKey(String key) {
+
+        String lower = key.toLowerCase(java.util.Locale.ROOT);
+        return lower.contains("password") || lower.contains("secret") || lower.contains("token")
+                || lower.contains("apikey") || lower.contains("api-key") || lower.contains("api_key")
+                || lower.contains("credential");
+
+    }
+
     public static void logException(Throwable e, SuperVanish plugin) {
 
         try {
@@ -59,8 +68,12 @@ public class ExceptionLogger {
                 StringBuilder settings = new StringBuilder("||");
                 for (String key : plugin.getSettings().getKeys(true)) {
 
-                    if (!plugin.getSettings().getString(key).contains("MemorySection"))
-                        settings.append(key).append(">").append(plugin.getSettings().getString(key)).append("||");
+                    if (!plugin.getSettings().getString(key).contains("MemorySection")) {
+
+                        String value = isSensitiveKey(key) ? "<redacted>" : plugin.getSettings().getString(key);
+                        settings.append(key).append(">").append(value).append("||");
+
+                    }
 
                 }
 

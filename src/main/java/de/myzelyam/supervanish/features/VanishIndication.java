@@ -20,7 +20,6 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
 import com.comphenix.protocol.wrappers.WrappedRemoteChatSessionData;
-import com.google.common.collect.ImmutableList;
 import de.myzelyam.api.vanish.PlayerShowEvent;
 import de.myzelyam.api.vanish.PostPlayerHideEvent;
 import de.myzelyam.supervanish.SuperVanish;
@@ -147,13 +146,18 @@ public class VanishIndication extends Feature {
                                     event.getPacket().getPlayerInfoDataLists().read(0));
                             Player receiver = event.getPlayer();
                             boolean modified = false;
-                            for (PlayerInfoData infoData : ImmutableList.copyOf(infoDataList)) {
+                            // Iterate a snapshot (ArrayList tolerates nulls; ImmutableList does not)
+                            // so we can safely set() on infoDataList during the loop. ProtocolLib
+                            // can hand back null entries during login packet flow on 1.19.4.
+                            for (PlayerInfoData infoData : new ArrayList<>(infoDataList)) {
 
                                 try {
 
                                     if (!isGameModeUpdate(event))
                                         break;
 
+                                    if (infoData == null)
+                                        continue;
                                     if (extractUUID(infoData) == null)
                                         continue;
                                     if (!VanishIndication.this.plugin.getVisibilityChanger().getHider()
