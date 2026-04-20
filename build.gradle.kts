@@ -33,7 +33,14 @@ tasks.named<ProcessResources>("processResources") {
     filesMatching(listOf("plugin.yml", "config.yml", "messages.yml")) {
         expand(props) { escapeBackslash.set(true) } // Keep literal '\n' etc. intact in YAML comments/values.
     }
-    from("LICENSE") { into("/") } // Bundle licenses into jarfiles.
+    from("LICENSE") { into("/") } // Bundle main GPLv2 license at jar root.
+    from("libs/License.txt") { // Bundle ProtocolLib GPLv2 license.
+        into("META-INF/licenses/ProtocolLib")
+        rename { "LICENSE" }
+    }
+    from("libs/TAB-OG/LICENSE") { // Bundle TAB-OG license.
+        into("META-INF/licenses/TAB-OG")
+    }
 }
 
 /* ---------------------------- Repos ---------------------------------- */
@@ -65,8 +72,11 @@ dependencies {
     // LuckPerms API (group, prefix, suffix lookups).
     compileOnly("net.luckperms:api:5.5") // Import the LuckPerms API.
 
-    // ProtocolLib (local jar in libs/).
-    compileOnly(files("libs/ProtocolLib-5.0.jar"))
+    // ProtocolLib (local jar in libs/ProtocolLib/).
+    compileOnly(files("libs/ProtocolLib/ProtocolLib-5.0.jar"))
+
+    // TAB-OG API (local jar in libs/TAB-OG/).
+    compileOnly(files("libs/TAB-OG/tab-api-4.2.0.jar"))
 
     // Lettuce API (for KeyDB).
     implementation("io.lettuce:lettuce-core:7.5.1.RELEASE") // Import the Lettuce API for keydb.

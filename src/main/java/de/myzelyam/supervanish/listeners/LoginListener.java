@@ -60,8 +60,6 @@ public class LoginListener implements Listener {
 
             if (vanished) {
 
-                // Set metadata early so other plugins (e.g. TAB) that process
-                // PlayerJoinEvent at lower priorities can detect vanish state
                 p.setMetadata("vanished", new FixedMetadataValue(plugin, true));
 
                 // hide self

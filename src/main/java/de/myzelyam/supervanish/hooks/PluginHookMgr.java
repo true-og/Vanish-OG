@@ -35,6 +35,7 @@ public class PluginHookMgr implements Listener {
             put("dynmap", DynmapHook.class);
             put("TrailGUI", TrailGUIHook.class);
             put("OpenInv", OpenInvHook.class);
+            put("TAB-OG", TabOGHook.class);
 
         }
 
@@ -110,6 +111,8 @@ public class PluginHookMgr implements Listener {
             return !plugin.getSettings().getBoolean("HookOptions.EnableDynmapHook");
         if (pluginName.equalsIgnoreCase("Utilities-OG"))
             return !plugin.getSettings().getBoolean("HookOptions.EnableUtilitiesOGHook", true);
+        if (pluginName.equalsIgnoreCase("TAB-OG"))
+            return !plugin.getSettings().getBoolean("HookOptions.EnableTabOGHook", true);
         return !plugin.getSettings().getBoolean("HookOptions.Enable" + pluginName + "Hook", true);
 
     }
