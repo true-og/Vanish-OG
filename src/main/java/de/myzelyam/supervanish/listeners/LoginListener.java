@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 public class LoginListener implements Listener {
 
@@ -58,6 +59,10 @@ public class LoginListener implements Listener {
             }
 
             if (vanished) {
+
+                // Set metadata early so other plugins (e.g. TAB) that process
+                // PlayerJoinEvent at lower priorities can detect vanish state
+                p.setMetadata("vanished", new FixedMetadataValue(plugin, true));
 
                 // hide self
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers())

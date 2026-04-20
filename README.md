@@ -8,13 +8,14 @@ Built for **Purpur 1.19.4**. Clients from **Minecraft 1.8 through 1.21.11** can 
 
 - **Tab list hiding works on 1.19+** Upstream switched it off after a Mojang change broke it. Vanish-OG handles the new format so vanished staff stay hidden from the tab list.
 - **Spectator indication works on 1.19.4 again.** `MarkVanishedPlayersAsSpectators` now uses the native 1.19.4 player info update packet, so staff who can see vanished players still get the dark-gray/head-only tab list cue across Via-served 1.8-1.21.11 clients.
-- **Silent chest opening works on 1.19+ again.** Same fix — peeking into containers looks completely normal to other players.
+- **Silent chest opening works on 1.19.4 again.** Peeking into containers looks completely invisible to other players if vanished.
 - **All connected clients see the same thing.** Whether someone joins from 1.8 or the latest 1.21.11 release through ViaSuite, vanish behaves identically.
 - **[Chat-OG](https://github.com/true-og/Chat-OG) owns announcement visibility.** Vanish-OG no longer rewrites join/quit, death, or advancement messages and no longer emits fake join/quit broadcasts on vanish toggles. Chat-OG is responsible for hiding vanished-player activity from Discord-facing announcements.
 - **OpenInv support.** If installed, Vanish-OG hands off chest viewing to OpenInv so staff never enter spectator mode and can't get stuck there after a crash.
 - **MiniPlaceholders support** (via Utilities-OG) for use in chat, tab, and hologram plugins.
 - **Safer chest peeking.** Staff no longer occasionally fall through the floor when finishing a peek. Pair with [WGamemode](https://github.com/true-og/WGamemode) to auto-restore gamemodes after crashes if OpenInv is not installed.
 - **KeyDB-backed storage.** Vanish state and player preferences are stored in KeyDB (Redis-compatible) via the Lettuce client instead of flat YAML files. Requires a `KeyDB.URI` in `config.yml`.
+- **Early vanish metadata for TAB-OG compatibility.** The `"vanished"` player metadata is set during `PlayerLoginEvent` (before any `PlayerJoinEvent` handler fires), so plugins like TAB-OG that process joins at lower event priorities can detect vanish state immediately without a race condition.
 - **Removed old clutter.** Deprecated functions are removed and the code is updated for java 17 conventions.
 
 ### Chat-OG handles some events that used to be handled by SuperVanish
