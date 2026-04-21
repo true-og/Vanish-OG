@@ -126,7 +126,7 @@ All of these are normal Bukkit events and should be handled on the main server t
 - [`PostPlayerShowEvent`](src/main/java/de/myzelyam/api/vanish/PostPlayerShowEvent.java)
   Fired after a player has been shown. Not cancellable. Includes `isSilent()`.
 - [`PlayerVanishStateChangeEvent`](src/main/java/de/myzelyam/api/vanish/PlayerVanishStateChangeEvent.java)
-  Fired when persisted vanish state changes for a UUID. Cancellable. Exposes `isVanishing()`, `getUUID()`, `getName()`, and `getCause()`.
+  Fired when persisted vanish state changes for a UUID. Cancellable. Exposes `isVanishing()`, `getUUID()`, `getPlayer()` (returns the Bukkit `Player` or `null` if offline), `getName()`, and `getCause()`. Constructible via `(UUID, String, boolean, String)` or `(Player, boolean, String)`.
 
 ### Example listener
 

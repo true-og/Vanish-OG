@@ -8,6 +8,8 @@
 
 package de.myzelyam.api.vanish;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -30,6 +32,12 @@ public class PlayerVanishStateChangeEvent extends Event implements Cancellable {
         this.uuid = uuid;
         this.name = name;
         this.cause = cause;
+
+    }
+
+    public PlayerVanishStateChangeEvent(Player player, boolean vanishing, String cause) {
+
+        this(player.getUniqueId(), player.getName(), vanishing, cause);
 
     }
 
@@ -80,6 +88,16 @@ public class PlayerVanishStateChangeEvent extends Event implements Cancellable {
     public UUID getUUID() {
 
         return uuid;
+
+    }
+
+    /**
+     * @return The Bukkit Player who is vanishing/reappearing, or null if the player
+     *         is not currently online
+     */
+    public Player getPlayer() {
+
+        return Bukkit.getPlayer(uuid);
 
     }
 
