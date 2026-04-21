@@ -56,6 +56,7 @@ public enum CommandAction {
 
     },
     RELOAD("sv.reload", true, "/sv reload", "Reloads all settings and messages"),
+    CLEANUP("sv.cleanup", true, "/sv cleanup", "Clears all vanish state and forces everyone visible"),
     PRINT_STACKTRACE("sv.stacktrace", true, "/sv stacktrace", "Logs info for a bug report"),
     SHOW_HELP("sv.help", true, "/sv help", "Shows this help page");
 
@@ -86,6 +87,8 @@ public enum CommandAction {
             list.add("recreatefiles");
         if (RELOAD.checkPermission(sender, plugin))
             list.add("reload");
+        if (CLEANUP.checkPermission(sender, plugin))
+            list.add("cleanup");
         if (VANISHED_LIST.checkPermission(sender, plugin))
             list.add("list");
         if (VANISH_SELF.checkPermission(sender, plugin))

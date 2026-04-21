@@ -61,6 +61,128 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
         this.itemPickupsKey = normalizedKeyPrefix + "item_pickups";
         this.dismissedKey = normalizedKeyPrefix + "dismissed";
 
+        cleanupLegacyKeys();
+        pruneInvalidVanishedEntries();
+        logStartupVanishedState();
+
+    }
+
+    /**
+     * Removes vanish data written under the pre-aadf6cc global namespace. Prior
+     * versions used unprefixed keys (e.g. "vanish:invisible_players") shared across
+     * every server that pointed at the same KeyDB. Left behind, those entries can
+     * poison a subsequent restore-from-backup scenario or confuse diagnostic tools.
+     * The current namespace is always prefixed (default "vanish-og:{port}:") so
+     * wiping the legacy keys is safe.
+     */
+    private void cleanupLegacyKeys() {
+
+        try {
+
+            final String[] legacyKeys = { "vanish:invisible_players", "vanish:player_names", "vanish:item_pickups",
+                    "vanish:dismissed" };
+            long removed = 0;
+            for (String key : legacyKeys) {
+
+                removed += commands.del(key);
+
+            }
+
+            if (removed > 0) {
+
+                plugin.log(Level.INFO, "Removed " + removed + " legacy (pre-aadf6cc) vanish key(s) from KeyDB.");
+
+            }
+
+        } catch (Exception e) {
+
+            plugin.log(Level.WARNING, "Failed to clean up legacy vanish keys: " + e.getMessage());
+
+        }
+
+    }
+
+    /**
+     * Drops UUIDs from the vanished-players set that do not parse or refer to
+     * players this plugin never vanished. Defensive against accidental writes and
+     * against upgrades from older builds that may have left junk entries behind.
+     */
+    private void pruneInvalidVanishedEntries() {
+
+        try {
+
+            Set<String> uuidStrings = commands.smembers(invisiblePlayersKey);
+            int removed = 0;
+            for (String uuidString : uuidStrings) {
+
+                try {
+
+                    UUID.fromString(uuidString);
+
+                } catch (IllegalArgumentException e) {
+
+                    commands.srem(invisiblePlayersKey, uuidString);
+                    removed++;
+
+                }
+
+            }
+
+            if (removed > 0) {
+
+                plugin.log(Level.WARNING,
+                        "Pruned " + removed + " malformed UUID entry(ies) from " + invisiblePlayersKey + ".");
+
+            }
+
+        } catch (Exception e) {
+
+            plugin.log(Level.WARNING, "Failed to prune invalid vanished entries: " + e.getMessage());
+
+        }
+
+    }
+
+    /**
+     * Logs the current vanished UUID count + names at startup so an operator can
+     * immediately see whether KeyDB holds unexpected state (e.g. "everyone is
+     * vanished" after a faulty upgrade).
+     */
+    private void logStartupVanishedState() {
+
+        try {
+
+            long count = commands.scard(invisiblePlayersKey);
+            plugin.log(Level.INFO,
+                    "KeyDB reports " + count + " vanished player(s) at startup (key=" + invisiblePlayersKey + ").");
+            if (count > 0 && count <= 20) {
+
+                Map<String, String> names = commands.hgetall(playerNamesKey);
+                plugin.log(Level.INFO, "Vanished player names: " + names.values());
+
+            }
+
+        } catch (Exception e) {
+
+            plugin.log(Level.WARNING, "Failed to query vanish state at startup: " + e.getMessage());
+
+        }
+
+    }
+
+    public void clearAllVanishState() {
+
+        try {
+
+            long removed = commands.del(invisiblePlayersKey, playerNamesKey);
+            plugin.log(Level.INFO, "Cleared all vanish state from KeyDB (" + removed + " key(s) deleted).");
+
+        } catch (Exception e) {
+
+            plugin.log(Level.WARNING, "Failed to clear vanish state: " + e.getMessage());
+
+        }
+
     }
 
     @Override

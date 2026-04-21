@@ -43,6 +43,7 @@ permissions:
       sv.damage: true
       sv.stacktrace: true
       sv.silentchest: true
+      sv.cleanup: true
     description: Grants you all Vanish-OG permissions
   supervanish.*:
     children:

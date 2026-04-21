@@ -126,6 +126,14 @@ public class SubCommandMgr {
 
             }
 
+            if (args[0].equalsIgnoreCase("cleanup") || args[0].equalsIgnoreCase("clearall")
+                    || args[0].equalsIgnoreCase("flush"))
+            {
+
+                executable = new Cleanup(plugin);
+
+            }
+
             if (args[0].equalsIgnoreCase("login")) {
 
                 executable = new BroadcastLogin(plugin);
