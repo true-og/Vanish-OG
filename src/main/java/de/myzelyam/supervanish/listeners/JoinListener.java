@@ -38,18 +38,9 @@ public class JoinListener implements EventExecutor, Listener {
 
                 PlayerJoinEvent e = (PlayerJoinEvent) event;
                 final Player p = e.getPlayer();
-                // hide others
-                for (Player onlinePlayer : Bukkit.getOnlinePlayers())
-                    if (plugin.getVanishStateMgr().isVanished(onlinePlayer.getUniqueId())
-                            && !plugin.hasPermissionToSee(p, onlinePlayer))
-                        plugin.getVisibilityChanger().getHider().setHidden(onlinePlayer, p, true);
                 // vanished:
                 if (plugin.getVanishStateMgr().isVanished(p.getUniqueId())) {
 
-                    // hide self
-                    for (Player onlinePlayer : Bukkit.getOnlinePlayers())
-                        if (!plugin.hasPermissionToSee(onlinePlayer, p))
-                            plugin.getVisibilityChanger().getHider().setHidden(p, onlinePlayer, true);
                     // reminding message
                     if (plugin.getSettings().getBoolean("MessageOptions.RemindVanishedOnJoin")) {
 
@@ -85,6 +76,8 @@ public class JoinListener implements EventExecutor, Listener {
                     p.removeMetadata("vanished", plugin);
 
                 }
+
+                plugin.reconcileVisibility(p);
 
                 // not necessarily vanished:
                 // recreate files msg

@@ -24,6 +24,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -192,19 +193,10 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
                     getSettings().getBoolean("InvisibilityFeatures.DefaultPickUpItemsOption"));
             final boolean vanished = vanishStateMgr.isVanished(player.getUniqueId());
             createVanishPlayer(player, itemPickUps);
-            if (vanished) {
-
-                Bukkit.getOnlinePlayers().forEach((Player onlinePlayer) -> {
-
-                    if (!hasPermissionToSee(onlinePlayer, player)) {
-
-                        visibilityChanger.getHider().setHidden(player, onlinePlayer, true);
-
-                    }
-
-                });
-
-            }
+            if (vanished)
+                player.setMetadata("vanished", new FixedMetadataValue(this, true));
+            else
+                player.removeMetadata("vanished", this);
 
             if (getSettings().getBoolean("MessageOptions.DisplayActionBar") && vanished && actionBarMgr != null) {
 
@@ -213,6 +205,8 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
             }
 
         });
+
+        reconcileAllVisibilities();
 
     }
 
@@ -385,6 +379,48 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
     public boolean canSee(Player viewer, Player viewed) {
 
         return !visibilityChanger.getHider().isHidden(viewed, viewer);
+
+    }
+
+    public void reconcileVisibility(Player subject) {
+
+        for (Player viewer : Bukkit.getOnlinePlayers()) {
+
+            reconcileVisibility(subject, viewer);
+            if (subject != viewer) {
+
+                reconcileVisibility(viewer, subject);
+
+            }
+
+        }
+
+    }
+
+    public void reconcileAllVisibilities() {
+
+        for (Player subject : Bukkit.getOnlinePlayers()) {
+
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+
+                reconcileVisibility(subject, viewer);
+
+            }
+
+        }
+
+    }
+
+    private void reconcileVisibility(Player subject, Player viewer) {
+
+        if (subject == viewer) {
+
+            return;
+
+        }
+
+        boolean hidden = vanishStateMgr.isVanished(subject.getUniqueId()) && !hasPermissionToSee(viewer, subject);
+        visibilityChanger.getHider().setHidden(subject, viewer, hidden);
 
     }
 
