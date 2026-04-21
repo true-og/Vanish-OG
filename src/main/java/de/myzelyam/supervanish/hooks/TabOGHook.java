@@ -8,6 +8,8 @@
 
 package de.myzelyam.supervanish.hooks;
 
+import de.myzelyam.api.vanish.PostPlayerHideEvent;
+import de.myzelyam.api.vanish.PostPlayerShowEvent;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.visibility.VanishStateMgr;
 
@@ -16,8 +18,13 @@ import me.neznamy.tab.api.integration.VanishIntegration;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+
+import java.lang.reflect.Method;
+import java.util.UUID;
 
 public class TabOGHook extends PluginHook {
 
@@ -57,6 +64,20 @@ public class TabOGHook extends PluginHook {
 
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onVanish(PostPlayerHideEvent event) {
+
+        notifyTabFeatures(event.getPlayer().getUniqueId());
+
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onReappear(PostPlayerShowEvent event) {
+
+        notifyTabFeatures(event.getPlayer().getUniqueId());
+
+    }
+
     private void unregisterIfPresent() {
 
         if (integration != null) {
@@ -71,6 +92,57 @@ public class TabOGHook extends PluginHook {
             }
 
             integration = null;
+
+        }
+
+    }
+
+    private void notifyTabFeatures(UUID playerUuid) {
+
+        // Fire once immediately for metadata-based TAB-OG features and once after
+        // BackendTabPlayer's vanish cache window so cache-backed features refresh too.
+        Bukkit.getScheduler().runTask(superVanish, () -> notifyTabFeaturesNow(playerUuid));
+        Bukkit.getScheduler().runTaskLater(superVanish, () -> notifyTabFeaturesNow(playerUuid), 20L);
+
+    }
+
+    private void notifyTabFeaturesNow(UUID playerUuid) {
+
+        if (integration == null) {
+
+            return;
+
+        }
+
+        try {
+
+            Class<?> tabClass = Class.forName("me.neznamy.tab.shared.TAB");
+            Object tab = tabClass.getMethod("getInstance").invoke(null);
+            if (tab == null) {
+
+                return;
+
+            }
+
+            Object tabPlayer = tabClass.getMethod("getPlayer", UUID.class).invoke(tab, playerUuid);
+            if (tabPlayer == null) {
+
+                return;
+
+            }
+
+            Object featureManager = tabClass.getMethod("getFeatureManager").invoke(tab);
+            Class<?> tabPlayerClass = Class.forName("me.neznamy.tab.shared.platform.TabPlayer");
+            Method vanishChangeMethod = featureManager.getClass().getMethod("onVanishStatusChange", tabPlayerClass);
+            vanishChangeMethod.invoke(featureManager, tabPlayer);
+
+        } catch (ReflectiveOperationException ignored) {
+
+            // TAB-OG implementation internals are optional and may differ across versions.
+
+        } catch (Throwable t) {
+
+            superVanish.logException(t);
 
         }
 

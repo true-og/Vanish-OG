@@ -27,7 +27,6 @@ InvisibilityFeatures:
   DefaultPickUpItemsOption: false
   # Should SV modify tablist packets to prevent the server from leaking who is online?
   # Works on Purpur 1.19.4 and is translated correctly for ViaSuite clients.
-  # When TAB-OG is installed with its Vanish-OG hook enabled, TAB-OG owns tablist filtering instead.
   ModifyTablistPackets: true
   # Should SV modify tab complete packets to prevent minecraft commands from leaking who is online?
   ModifyTabCompletePackets: true
