@@ -8,6 +8,7 @@
 
 package de.myzelyam.supervanish.visibility;
 
+import java.util.Locale;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,20 +28,22 @@ import io.lettuce.core.api.sync.RedisCommands;
 
 public class KeyDBVanishStateMgr extends VanishStateMgr {
 
-    private static final String INVISIBLE_PLAYERS_KEY = "vanish:invisible_players";
-    private static final String PLAYER_NAMES_KEY = "vanish:player_names";
-    private static final String ITEM_PICKUPS_KEY = "vanish:item_pickups";
-    private static final String DISMISSED_KEY = "vanish:dismissed";
-
     private final SuperVanish plugin;
     private final RedisClient redisClient;
     private final StatefulRedisConnection<String, String> connection;
     private final RedisCommands<String, String> commands;
+    private final String invisiblePlayersKey;
+    private final String playerNamesKey;
+    private final String itemPickupsKey;
+    private final String dismissedKey;
 
-    public KeyDBVanishStateMgr(SuperVanish plugin, String host, int port, String password, int database) {
+    public KeyDBVanishStateMgr(SuperVanish plugin, String host, int port, String password, int database,
+            String keyPrefix)
+    {
 
         super(plugin);
         this.plugin = plugin;
+        final String normalizedKeyPrefix = normalizeKeyPrefix(plugin, keyPrefix);
 
         RedisURI.Builder uriBuilder = RedisURI.builder().withHost(host).withPort(port).withDatabase(database);
 
@@ -53,13 +56,17 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
         this.redisClient = RedisClient.create(uriBuilder.build());
         this.connection = redisClient.connect();
         this.commands = connection.sync();
+        this.invisiblePlayersKey = normalizedKeyPrefix + "invisible_players";
+        this.playerNamesKey = normalizedKeyPrefix + "player_names";
+        this.itemPickupsKey = normalizedKeyPrefix + "item_pickups";
+        this.dismissedKey = normalizedKeyPrefix + "dismissed";
 
     }
 
     @Override
     public boolean isVanished(final UUID uuid) {
 
-        return commands.sismember(INVISIBLE_PLAYERS_KEY, uuid.toString());
+        return commands.sismember(invisiblePlayersKey, uuid.toString());
 
     }
 
@@ -76,13 +83,13 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
 
         if (hide) {
 
-            commands.sadd(INVISIBLE_PLAYERS_KEY, uuid.toString());
-            commands.hset(PLAYER_NAMES_KEY, uuid.toString(), name);
+            commands.sadd(invisiblePlayersKey, uuid.toString());
+            commands.hset(playerNamesKey, uuid.toString(), name);
 
         } else {
 
-            commands.srem(INVISIBLE_PLAYERS_KEY, uuid.toString());
-            commands.hdel(PLAYER_NAMES_KEY, uuid.toString());
+            commands.srem(invisiblePlayersKey, uuid.toString());
+            commands.hdel(playerNamesKey, uuid.toString());
 
         }
 
@@ -91,7 +98,7 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
     @Override
     public Set<UUID> getVanishedPlayers() {
 
-        Set<String> uuidStrings = commands.smembers(INVISIBLE_PLAYERS_KEY);
+        Set<String> uuidStrings = commands.smembers(invisiblePlayersKey);
         Set<UUID> vanishedPlayers = new HashSet<>();
         for (String uuidString : uuidStrings) {
 
@@ -101,7 +108,7 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
 
             } catch (IllegalArgumentException e) {
 
-                commands.srem(INVISIBLE_PLAYERS_KEY, uuidString);
+                commands.srem(invisiblePlayersKey, uuidString);
                 plugin.log(Level.WARNING, "KeyDB contained an invalid player uuid, deleting it.");
 
             }
@@ -126,7 +133,7 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
     @Override
     public UUID getVanishedUUIDFromName(String name) {
 
-        Map<String, String> allNames = commands.hgetall(PLAYER_NAMES_KEY);
+        Map<String, String> allNames = commands.hgetall(playerNamesKey);
         for (Map.Entry<String, String> entry : allNames.entrySet()) {
 
             if (entry.getValue().equalsIgnoreCase(name)) {
@@ -152,7 +159,7 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
     @Override
     public boolean getItemPickUps(UUID uuid, boolean defaultValue) {
 
-        String value = commands.hget(ITEM_PICKUPS_KEY, uuid.toString());
+        String value = commands.hget(itemPickupsKey, uuid.toString());
         if (value == null) {
 
             return defaultValue;
@@ -166,14 +173,14 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
     @Override
     public void setItemPickUps(UUID uuid, boolean value) {
 
-        commands.hset(ITEM_PICKUPS_KEY, uuid.toString(), String.valueOf(value));
+        commands.hset(itemPickupsKey, uuid.toString(), String.valueOf(value));
 
     }
 
     @Override
     public boolean isDismissed(String id, String version) {
 
-        String value = commands.hget(DISMISSED_KEY, id + ":" + version);
+        String value = commands.hget(dismissedKey, id + ":" + version);
         return Boolean.parseBoolean(value);
 
     }
@@ -181,7 +188,7 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
     @Override
     public void setDismissed(String id, String version, boolean value) {
 
-        commands.hset(DISMISSED_KEY, id + ":" + version, String.valueOf(value));
+        commands.hset(dismissedKey, id + ":" + version, String.valueOf(value));
 
     }
 
@@ -190,6 +197,22 @@ public class KeyDBVanishStateMgr extends VanishStateMgr {
 
         connection.close();
         redisClient.shutdown();
+
+    }
+
+    private static String normalizeKeyPrefix(SuperVanish plugin, String keyPrefix) {
+
+        final String rawPrefix = keyPrefix == null || keyPrefix.trim().isEmpty()
+                ? "vanish-og:" + plugin.getServer().getPort()
+                : keyPrefix.trim();
+        String normalizedPrefix = rawPrefix.toLowerCase(Locale.ROOT);
+        if (!normalizedPrefix.endsWith(":")) {
+
+            normalizedPrefix += ":";
+
+        }
+
+        return normalizedPrefix;
 
     }
 
