@@ -43,6 +43,7 @@ import de.myzelyam.supervanish.listeners.QuitListener;
 import de.myzelyam.supervanish.listeners.TabCompleteListener;
 import de.myzelyam.supervanish.listeners.WorldChangeListener;
 import de.myzelyam.supervanish.utils.ExceptionLogger;
+import de.myzelyam.supervanish.utils.BukkitPlayerHidingUtil;
 import de.myzelyam.supervanish.utils.VersionUtil;
 import de.myzelyam.supervanish.visibility.ActionBarMgr;
 import de.myzelyam.supervanish.visibility.KeyDBVanishStateMgr;
@@ -152,6 +153,13 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
             }
 
+            forceShowAllPlayers();
+            if (visibilityChanger != null) {
+
+                visibilityChanger.getHider().clearHiddenState();
+
+            }
+
             if (featureMgr != null) {
 
                 featureMgr.disableFeatures();
@@ -186,6 +194,9 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
     }
 
     private void onReload() {
+
+        forceShowAllPlayers();
+        visibilityChanger.getHider().clearHiddenState();
 
         Bukkit.getOnlinePlayers().forEach((Player player) -> {
 
@@ -404,6 +415,32 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
             for (Player viewer : Bukkit.getOnlinePlayers()) {
 
                 reconcileVisibility(subject, viewer);
+
+            }
+
+        }
+
+    }
+
+    public void forceShowAllPlayers() {
+
+        if (visibilityChanger == null) {
+
+            return;
+
+        }
+
+        for (Player subject : Bukkit.getOnlinePlayers()) {
+
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+
+                if (subject == viewer) {
+
+                    continue;
+
+                }
+
+                BukkitPlayerHidingUtil.showPlayer(subject, viewer, this);
 
             }
 

@@ -11,7 +11,6 @@ package de.myzelyam.supervanish.listeners;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.commands.CommandAction;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -61,6 +60,7 @@ public class LoginListener implements Listener {
             if (vanished) {
 
                 p.setMetadata("vanished", new FixedMetadataValue(plugin, true));
+
             } else {
 
                 p.removeMetadata("vanished", plugin);

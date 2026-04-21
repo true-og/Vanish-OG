@@ -10,7 +10,6 @@ package de.myzelyam.supervanish.listeners;
 
 import de.myzelyam.supervanish.SuperVanish;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.Listener;
@@ -77,7 +76,16 @@ public class JoinListener implements EventExecutor, Listener {
 
                 }
 
-                plugin.reconcileVisibility(p);
+                new BukkitRunnable() {
+
+                    @Override
+                    public void run() {
+
+                        plugin.reconcileVisibility(p);
+
+                    }
+
+                }.runTaskLater(plugin, 1L);
 
                 // not necessarily vanished:
                 // recreate files msg

@@ -113,6 +113,12 @@ public abstract class PlayerHider implements Listener {
 
     }
 
+    public void clearHiddenState() {
+
+        playerHiddenFromPlayersMap.clear();
+
+    }
+
     private void registerQuitListener() {
 
         plugin.getServer().getPluginManager().registerEvents(new Listener() {
