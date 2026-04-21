@@ -164,4 +164,20 @@ public class PluginHookMgr implements Listener {
 
     }
 
+    // Must run before the rest of the plugin tears down so TAB-OG's static
+    // HANDLERS list doesn't keep a reference to a disabled SuperVanish.
+    public void onSuperVanishDisable() {
+
+        for (PluginHook hook : activeHooks) {
+
+            if (hook instanceof TabOGHook) {
+
+                ((TabOGHook) hook).onSuperVanishDisable();
+
+            }
+
+        }
+
+    }
+
 }

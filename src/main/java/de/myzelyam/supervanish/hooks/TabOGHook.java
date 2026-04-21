@@ -9,6 +9,7 @@
 package de.myzelyam.supervanish.hooks;
 
 import de.myzelyam.supervanish.SuperVanish;
+import de.myzelyam.supervanish.visibility.VanishStateMgr;
 
 import me.neznamy.tab.api.TabPlayer;
 import me.neznamy.tab.api.integration.VanishIntegration;
@@ -20,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class TabOGHook extends PluginHook {
 
-    private VanishIntegration integration;
+    private VanishOGIntegration integration;
 
     public TabOGHook(SuperVanish superVanish) {
 
@@ -31,6 +32,8 @@ public class TabOGHook extends PluginHook {
     @Override
     public void onPluginEnable(Plugin plugin) {
 
+        // Do not double-register if an earlier lifecycle already registered one.
+        unregisterIfPresent();
         integration = new VanishOGIntegration(superVanish);
         integration.register();
 
@@ -39,9 +42,34 @@ public class TabOGHook extends PluginHook {
     @Override
     public void onPluginDisable(Plugin plugin) {
 
+        unregisterIfPresent();
+
+    }
+
+    // Called from SuperVanish.onDisable() so the integration is removed from
+    // TAB-OG's static HANDLERS list before the plugin's state is torn down.
+    // Without this, TAB-OG keeps a stale handler whose VanishStateMgr has a
+    // closed Redis connection, which then throws on every canSee() call and
+    // corrupts packet writes during subsequent logins.
+    public void onSuperVanishDisable() {
+
+        unregisterIfPresent();
+
+    }
+
+    private void unregisterIfPresent() {
+
         if (integration != null) {
 
-            integration.unregister();
+            try {
+
+                integration.unregister();
+
+            } catch (Throwable ignored) {
+
+                // TAB-OG may already be unloaded; removing a missing handler is harmless.
+            }
+
             integration = null;
 
         }
@@ -59,23 +87,54 @@ public class TabOGHook extends PluginHook {
 
         }
 
+        // TAB-OG invokes this on its async CPU-manager thread during join
+        // processing, so every field access must tolerate partial-enable and
+        // partial-disable states. Any exception thrown here propagates through
+        // TAB-OG's feature pipeline and breaks player login packet flow.
         @Override
         public boolean canSee(@NotNull TabPlayer viewer, @NotNull TabPlayer target) {
 
-            Player bukkitViewer = Bukkit.getPlayer(viewer.getUniqueId());
-            Player bukkitTarget = Bukkit.getPlayer(target.getUniqueId());
-            if (bukkitViewer == null || bukkitTarget == null)
+            try {
+
+                final VanishStateMgr stateMgr = plugin.getVanishStateMgr();
+                if (stateMgr == null)
+                    return true;
+                if (!stateMgr.isVanished(target.getUniqueId()))
+                    return true;
+                final Player bukkitViewer = Bukkit.getPlayer(viewer.getUniqueId());
+                if (bukkitViewer == null)
+                    return true;
+                // Direct permission check only: plugin.hasPermissionToSee() reaches
+                // LayeredPermissionChecker, which iterates the non-thread-safe
+                // vanishPlayers HashSet on SuperVanish. That's safe on the Bukkit
+                // main thread but not here, so we stick to Player.hasPermission.
+                return bukkitViewer.hasPermission("sv.see");
+
+            } catch (Throwable t) {
+
+                plugin.logException(t);
                 return true;
-            if (!plugin.getVanishStateMgr().isVanished(bukkitTarget.getUniqueId()))
-                return true;
-            return plugin.hasPermissionToSee(bukkitViewer, bukkitTarget);
+
+            }
 
         }
 
         @Override
         public boolean isVanished(@NotNull TabPlayer player) {
 
-            return plugin.getVanishStateMgr().isVanished(player.getUniqueId());
+            try {
+
+                final VanishStateMgr stateMgr = plugin.getVanishStateMgr();
+                if (stateMgr == null)
+                    return false;
+                return stateMgr.isVanished(player.getUniqueId());
+
+            } catch (Throwable t) {
+
+                plugin.logException(t);
+                return false;
+
+            }
 
         }
 

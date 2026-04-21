@@ -143,6 +143,14 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
         try {
 
+            // Unhook from TAB-OG before tearing down VanishStateMgr so no stale
+            // handler survives with a closed Redis connection across reload.
+            if (pluginHookMgr != null) {
+
+                pluginHookMgr.onSuperVanishDisable();
+
+            }
+
             if (featureMgr != null) {
 
                 featureMgr.disableFeatures();
