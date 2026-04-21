@@ -3,12 +3,12 @@ package de.myzelyam.supervanish.hooks;
 import de.myzelyam.api.vanish.PlayerShowEvent;
 import de.myzelyam.api.vanish.PostPlayerHideEvent;
 import de.myzelyam.supervanish.SuperVanish;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 
 import java.lang.reflect.Method;
 import java.util.HashSet;
@@ -155,10 +155,14 @@ public class OpenInvHook extends PluginHook {
 
         try {
 
+            // OpenInv 4.2.0+: openInventory's second arg is ISpecialInventory,
+            // not org.bukkit.inventory.Inventory. The interface isn't on our
+            // compile classpath, so resolve it reflectively.
+            Class<?> iSpecialInventory = Class.forName("com.lishid.openinv.internal.ISpecialInventory");
             Method getSpecialInventoryMethod = plugin.getClass().getMethod("getSpecialInventory", Player.class,
                     boolean.class);
-            Inventory specialInventory = (Inventory) getSpecialInventoryMethod.invoke(plugin, target, true);
-            Method openInventoryMethod = plugin.getClass().getMethod("openInventory", Player.class, Inventory.class);
+            Object specialInventory = getSpecialInventoryMethod.invoke(plugin, target, true);
+            Method openInventoryMethod = plugin.getClass().getMethod("openInventory", Player.class, iSpecialInventory);
             openInventoryMethod.invoke(plugin, vanished, specialInventory);
 
         } catch (Exception | NoSuchMethodError | NoClassDefFoundError e) {
@@ -178,16 +182,19 @@ public class OpenInvHook extends PluginHook {
 
     }
 
+    // OpenInv 4.2.0+ signatures take OfflinePlayer, not Player. Player extends
+    // OfflinePlayer so the argument is compatible; only the reflected lookup
+    // signature needed updating.
     private boolean getSilentContainerStatus(Player player) throws ReflectiveOperationException {
 
-        Method method = plugin.getClass().getMethod("getSilentContainerStatus", Player.class);
+        Method method = plugin.getClass().getMethod("getSilentContainerStatus", OfflinePlayer.class);
         return (Boolean) method.invoke(plugin, player);
 
     }
 
     private void setSilentContainerStatus(Player player, boolean status) throws ReflectiveOperationException {
 
-        Method method = plugin.getClass().getMethod("setSilentContainerStatus", Player.class, boolean.class);
+        Method method = plugin.getClass().getMethod("setSilentContainerStatus", OfflinePlayer.class, boolean.class);
         method.invoke(plugin, player, status);
 
     }
