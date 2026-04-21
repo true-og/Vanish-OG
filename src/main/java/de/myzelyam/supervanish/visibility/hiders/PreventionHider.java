@@ -30,9 +30,20 @@ public class PreventionHider extends PlayerHider implements Runnable {
         // Server is Purpur 1.19.4 and ProtocolLib 5.0+ maps PLAYER_INFO to the new
         // ClientboundPlayerInfoUpdatePacket; ViaSuite re-encodes for clients on
         // 1.8-1.21.x.
+        final boolean tabOGHandlesTablist = plugin.getServer().getPluginManager().isPluginEnabled("TAB-OG")
+                && plugin.getSettings().getBoolean("HookOptions.EnableTabOGHook", true);
         if (plugin.isUseProtocolLib() && plugin.getVersionUtil().isOneDotXOrHigher(8)
-                && plugin.getSettings().getBoolean("InvisibilityFeatures.ModifyTablistPackets", true))
+                && plugin.getSettings().getBoolean("InvisibilityFeatures.ModifyTablistPackets", true)
+                && !tabOGHandlesTablist)
+        {
+
+            // TAB-OG already consumes Vanish-OG's VanishIntegration handler and owns
+            // tab-list rewrites. Running both filters on the same PLAYER_INFO packets
+            // causes duplicate removal logic and unstable tab visibility.
             PlayerInfoModule.register(plugin, this);
+
+        }
+
         if (plugin.isUseProtocolLib()
                 && plugin.getSettings().getBoolean("InvisibilityFeatures.ModifyTabCompletePackets", true)
                 && !plugin.getVersionUtil().isOneDotXOrHigher(21))

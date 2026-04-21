@@ -26,7 +26,8 @@ InvisibilityFeatures:
   # Should vanished players pick up items by default? This can be changed individually with /sv tipu
   DefaultPickUpItemsOption: false
   # Should SV modify tablist packets to prevent the server from leaking who is online?
-  # Works on Purpur 1.19.4 and is translated correctly for ViaSuite clients
+  # Works on Purpur 1.19.4 and is translated correctly for ViaSuite clients.
+  # When TAB-OG is installed with its Vanish-OG hook enabled, TAB-OG owns tablist filtering instead.
   ModifyTablistPackets: true
   # Should SV modify tab complete packets to prevent minecraft commands from leaking who is online?
   ModifyTabCompletePackets: true
@@ -104,7 +105,7 @@ RestrictiveOptions:
   PreventBlockPlacing: false
   # Should invisible players not be able to damage players or mobs?
   # Bypass permission: sv.damage
-  PreventHittingEntities: true
+  PreventHittingEntities: false
 
 ############# External Invisibility ##############
 ExternalInvisibility:
@@ -129,6 +130,9 @@ HookOptions:
   DynmapSendJoinLeaveMessages: false
   # Should SV hook into TrailGUI and disable trails while you're vanished?
   EnableTrailGUIHook: false
+  # Should SV register its TAB-OG VanishIntegration handler?
+  # Leave enabled if you use TAB-OG so tab visibility is driven by TAB itself.
+  EnableTabOGHook: true
   # Should SV hook into Utilities-OG MiniPlaceholders and add new placeholders to SV + register its own ones for
   # other plugins?
   # Own ones: isvanished, vanishedplayers, playercount
