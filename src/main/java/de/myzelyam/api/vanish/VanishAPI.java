@@ -46,7 +46,7 @@ public class VanishAPI {
     }
 
     /**
-     * Checks if a player is vanished by querying KeyDB.
+     * Checks if a player is vanished.
      *
      * @param uuid - the player's UUID.
      * @return TRUE if the player is vanished, FALSE otherwise.
@@ -55,6 +55,19 @@ public class VanishAPI {
 
         Validation.checkNotNull("UUID cannot be null!", uuid);
         return PLUGIN.getVanishStateMgr().isVanished(uuid);
+
+    }
+
+    /**
+     * Checks if a player is vanished.
+     *
+     * @param player - the player.
+     * @return TRUE if the player is vanished, FALSE otherwise.
+     */
+    public static boolean isVanished(Player player) {
+
+        Validation.checkNotNull("Player cannot be null!", player);
+        return PLUGIN.getVanishStateMgr().isVanished(player);
 
     }
 

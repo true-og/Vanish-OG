@@ -78,9 +78,6 @@ dependencies {
     // TAB-OG API (local jar in libs/TAB-OG/).
     compileOnly(files("libs/TAB-OG/tab-api-4.2.0.jar"))
 
-    // Lettuce API (for KeyDB).
-    implementation("io.lettuce:lettuce-core:7.5.1.RELEASE") // Import the Lettuce API for keydb.
-
     // Citizens API.
     compileOnly("net.citizensnpcs:citizensapi:2.0.28-SNAPSHOT")
 
@@ -92,10 +89,6 @@ dependencies {
 
     // Import MiniPlaceholders API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
-
-    // SLF4J warning fix.
-    implementation("org.slf4j:slf4j-api:2.0.17") // Bundle a relocated SLF4J API for shaded dependencies.
-    implementation("org.slf4j:slf4j-nop:2.0.17") // Provide a relocated no-op SLF4J backend to avoid provider warnings.
 
     // Mojang Brigadier (provided at runtime by Purpur).
     compileOnly("com.mojang:brigadier:1.0.18")
@@ -117,9 +110,6 @@ tasks.shadowJar {
     mergeServiceFiles()
     archiveClassifier.set("") // Use empty string instead of null.
     archiveBaseName.set(rootProject.name) // Vanish-OG-${version}.jar
-    minimize {
-        exclude(dependency("org.slf4j:slf4j-nop:.*")) // ServiceLoader-only; minimize() would drop NOPServiceProvider.
-    }
 }
 
 tasks.jar { archiveClassifier.set("part") } // Applies to root jarfile only.

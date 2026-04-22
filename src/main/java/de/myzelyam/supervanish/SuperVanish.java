@@ -46,10 +46,10 @@ import de.myzelyam.supervanish.utils.ExceptionLogger;
 import de.myzelyam.supervanish.utils.BukkitPlayerHidingUtil;
 import de.myzelyam.supervanish.utils.VersionUtil;
 import de.myzelyam.supervanish.visibility.ActionBarMgr;
-import de.myzelyam.supervanish.visibility.KeyDBVanishStateMgr;
 import de.myzelyam.supervanish.visibility.ServerListPacketListener;
 import de.myzelyam.supervanish.visibility.VanishStateMgr;
 import de.myzelyam.supervanish.visibility.VisibilityChanger;
+import de.myzelyam.supervanish.visibility.YamlVanishStateRepository;
 import de.myzelyam.supervanish.visibility.hiders.PreventionHider;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -95,9 +95,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
             layeredPermissionChecker = new LayeredPermissionChecker(this);
             command = new VanishCommand(this);
             versionUtil = new VersionUtil(this);
-            vanishStateMgr = new KeyDBVanishStateMgr(this, getSettings().getString("KeyDB.Host"),
-                    getSettings().getInt("KeyDB.Port"), getSettings().getString("KeyDB.Password"),
-                    getSettings().getInt("KeyDB.Database"), getSettings().getString("KeyDB.KeyPrefix"));
+            vanishStateMgr = new VanishStateMgr(this, new YamlVanishStateRepository(this));
             configMgr.checkFilesForLeftOvers();
 
             visibilityChanger = new VisibilityChanger(new PreventionHider(this), this);
@@ -146,7 +144,7 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
         try {
 
             // Unhook from TAB-OG before tearing down VanishStateMgr so no stale
-            // handler survives with a closed Redis connection across reload.
+            // handler survives across reload with a disabled plugin reference.
             if (pluginHookMgr != null) {
 
                 pluginHookMgr.onSuperVanishDisable();

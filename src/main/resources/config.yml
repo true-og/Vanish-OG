@@ -154,18 +154,6 @@ CompatibilityOptions:
   # The quit listener still needs to run after some plugins that adjust vanish state on logout.
   PlayerQuitEventPriority: HIGHEST
 
-################## KeyDB Options ##################
-KeyDB:
-  # Connection settings for KeyDB.
-  # Host name or IP address of the KeyDB server.
-  Host: "localhost"
-  # Port number of the KeyDB server.
-  Port: 6379
-  # Password for the KeyDB server. Leave empty for no authentication.
-  # The KEYDB_PASSWORD variable is interpreted by true-og/SubstAgent and is configurable by editing .env in your server root.
-  Password: "^{KEYDB_PASSWORD}"
-  # Database index to use (keep 0 unless you know what you are doing).
-  Database: 0
-  # Prefix for all vanish keys stored in KeyDB. Change this if multiple servers share the same database.
-  # Defaults to "vanish-og:<server-port>" when omitted.
-  KeyPrefix: ""
+################## Data Storage ###################
+# Vanish-OG currently stores persisted vanish state, item pickup preferences,
+# and dismissed notices in plugins/Vanish-OG/data.yml.

@@ -45,8 +45,7 @@ public class LoginListener implements Listener {
             {
 
                 // Persist the auto-unvanish so reconcileVisibility() and TAB-OG's
-                // canSee() (both of which consult KeyDB directly) don't keep hiding
-                // the player based on a stale vanished flag.
+                // canSee() do not keep hiding the player based on stale saved state.
                 plugin.getVanishStateMgr().setVanishedState(p.getUniqueId(), p.getName(), false, null);
                 vanished = false;
 

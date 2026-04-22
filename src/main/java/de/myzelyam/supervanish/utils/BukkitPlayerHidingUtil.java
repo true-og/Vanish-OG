@@ -67,7 +67,7 @@ public class BukkitPlayerHidingUtil {
      * that Vanish-OG's normal {@code showPlayer(Plugin, Player)} cannot remove — so
      * {@code /sv cleanup} must also call the deprecated {@code showPlayer(Player)}
      * to drop it. Without this step, players stay invisible to each other even
-     * after cleanup wipes KeyDB and Vanish-OG's own hide map.
+     * after cleanup wipes persisted vanish state and Vanish-OG's own hide map.
      */
     public static void showPlayerAggressive(Player player, Player viewer, SuperVanish plugin) {
 

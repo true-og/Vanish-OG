@@ -55,9 +55,8 @@ public class TabOGHook extends PluginHook {
 
     // Called from SuperVanish.onDisable() so the integration is removed from
     // TAB-OG's static HANDLERS list before the plugin's state is torn down.
-    // Without this, TAB-OG keeps a stale handler whose VanishStateMgr has a
-    // closed Redis connection, which then throws on every canSee() call and
-    // corrupts packet writes during subsequent logins.
+    // Without this, TAB-OG keeps a stale handler whose plugin reference no
+    // longer has valid state during subsequent logins.
     public void onSuperVanishDisable() {
 
         unregisterIfPresent();

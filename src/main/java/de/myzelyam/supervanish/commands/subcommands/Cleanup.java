@@ -17,8 +17,6 @@ import org.bukkit.plugin.Plugin;
 import de.myzelyam.supervanish.SuperVanish;
 import de.myzelyam.supervanish.commands.CommandAction;
 import de.myzelyam.supervanish.commands.SubCommand;
-import de.myzelyam.supervanish.visibility.KeyDBVanishStateMgr;
-import de.myzelyam.supervanish.visibility.VanishStateMgr;
 import net.trueog.utilitiesog.UtilitiesOG;
 
 public class Cleanup extends SubCommand {
@@ -38,12 +36,7 @@ public class Cleanup extends SubCommand {
 
         }
 
-        VanishStateMgr mgr = plugin.getVanishStateMgr();
-        if (mgr instanceof KeyDBVanishStateMgr keyDbMgr) {
-
-            keyDbMgr.clearAllVanishState();
-
-        }
+        plugin.getVanishStateMgr().clearAllVanishState();
 
         // Must run before forceShowAllPlayers: Essentials' setVanished(false)
         // internally calls the deprecated showPlayer(Player) for every online
