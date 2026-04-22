@@ -44,6 +44,10 @@ public class LoginListener implements Listener {
                     && !CommandAction.VANISH_SELF.checkPermission(p, plugin))
             {
 
+                // Persist the auto-unvanish so reconcileVisibility() and TAB-OG's
+                // canSee() (both of which consult KeyDB directly) don't keep hiding
+                // the player based on a stale vanished flag.
+                plugin.getVanishStateMgr().setVanishedState(p.getUniqueId(), p.getName(), false, null);
                 vanished = false;
 
             }
