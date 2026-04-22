@@ -49,12 +49,12 @@ InvisibilityFeatures:
 
 ############# Vanish State Features ##############
 VanishStateFeatures:
-  # Should players with the permission 'sv.joinvanished' join vanished all the time?
-  # Doesn't work if you use GroupManager for permissions
-  AutoVanishOnJoin: false
+  # Vanish state is persisted in plugins/Vanish-OG/data.yml.
+  # Players only rejoin vanished if that persisted state still says they are vanished.
   # Should invisible players reappear automatically when they change their world?
   ReappearOnWorldChange: false
   # Should invisible players reappear automatically when they leave the server?
+  # If enabled, their persisted vanished state is cleared on quit.
   ReappearOnQuit: false
   # Should invisible players reappear automatically
   # when they change their world and don't have the permission 'sv.use' anymore?

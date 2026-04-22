@@ -37,7 +37,6 @@ permissions:
       sv.toggleitems: true
       sv.recreatefiles: true
       sv.notoggle: true
-      sv.joinvanished: true
       sv.breakblocks: true
       sv.placeblocks: true
       sv.damage: true
@@ -55,7 +54,5 @@ permissions:
     description: Other players cannot hide/show you if you're online
   sv.keepfly:
     description: You can always keep flying when you reappear
-  sv.joinvanished:
-    description: You always join vanished (must be enabled in config)
   sv.silentchest:
     description: You can open chests silently

@@ -36,31 +36,23 @@ public class LoginListener implements Listener {
             if (e.getResult() != PlayerLoginEvent.Result.ALLOWED)
                 return;
             final Player p = e.getPlayer();
-            boolean vanished = plugin.getVanishStateMgr().isVanished(p.getUniqueId());
+            boolean persistedVanished = plugin.getVanishStateMgr().isVanished(p.getUniqueId());
             boolean itemPickUps = plugin.getVanishStateMgr().getItemPickUps(p.getUniqueId(),
                     plugin.getSettings().getBoolean("InvisibilityFeatures.DefaultPickUpItemsOption"));
             plugin.createVanishPlayer(p, itemPickUps);
-            if (vanished && plugin.getSettings().getBoolean("VanishStateFeatures.CheckPermissionOnLogin", false)
+            if (persistedVanished
+                    && plugin.getSettings().getBoolean("VanishStateFeatures.CheckPermissionOnLogin", false)
                     && !CommandAction.VANISH_SELF.checkPermission(p, plugin))
             {
 
                 // Persist the auto-unvanish so reconcileVisibility() and TAB-OG's
                 // canSee() do not keep hiding the player based on stale saved state.
                 plugin.getVanishStateMgr().setVanishedState(p.getUniqueId(), p.getName(), false, null);
-                vanished = false;
+                persistedVanished = false;
 
             }
 
-            if (!vanished && p.hasPermission("sv.joinvanished")
-                    && plugin.getSettings().getBoolean("VanishStateFeatures.AutoVanishOnJoin", false))
-            {
-
-                plugin.getVanishStateMgr().setVanishedState(p.getUniqueId(), p.getName(), true, null);
-                vanished = true;
-
-            }
-
-            if (vanished) {
+            if (persistedVanished) {
 
                 p.setMetadata("vanished", new FixedMetadataValue(plugin, true));
 

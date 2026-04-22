@@ -15,6 +15,7 @@ Built for **Purpur 1.19.4**. Clients from **Minecraft 1.8 through 1.21.11** can 
 - **MiniPlaceholders support** (via Utilities-OG) for use in chat, tab, and hologram plugins.
 - **Safer chest peeking.** Staff no longer occasionally fall through the floor when finishing a peek. Pair with [WGamemode](https://github.com/true-og/WGamemode) to auto-restore gamemodes after crashes if OpenInv is not installed.
 - **Flat-file storage again.** Vanish state and player preferences are stored locally in `plugins/Vanish-OG/data.yml`, which keeps the runtime path simple and removes the external KeyDB dependency.
+- **Rejoin state is persisted, not permission-driven.** Players only reconnect vanished if `data.yml` still marks them vanished from last time; there is no "always join vanished" permission path anymore.
 - **TAB-OG compatibility via TAB API.** When [TAB-OG](https://github.com/true-og/TAB-OG) is installed, Vanish-OG registers a `VanishIntegration` handler with TAB's API so TAB consults Vanish-OG's state manager directly for its `canSee()` / `isVanished()` checks instead of depending solely on the `"vanished"` player metadata key. This closes the join-time race where Forge clients crashed because TAB evaluated tab-list visibility before the metadata was set. The metadata key is still set during `PlayerLoginEvent` so TAB's placeholder-level `isVanished` fallback and any other plugin using the convention keep working.
 - **Removed old clutter.** Deprecated functions are removed and the code is updated for java 17 conventions.
 
