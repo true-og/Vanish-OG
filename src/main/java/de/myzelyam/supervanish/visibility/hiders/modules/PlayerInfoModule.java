@@ -53,10 +53,14 @@ public class PlayerInfoModule extends PacketAdapter {
     @Override
     public void onPacketSending(PacketEvent event) {
 
-        // multiple events share same packet object
-        event.setPacket(event.getPacket().shallowClone());
         try {
 
+            // If nobody is vanished, do not touch login/player-info packets at all.
+            if (plugin.getVanishStateMgr().getOnlineVanishedPlayers().isEmpty())
+                return;
+
+            // multiple events share same packet object
+            event.setPacket(event.getPacket().shallowClone());
             List<PlayerInfoData> rawList = event.getPacket().getPlayerInfoDataLists().read(0);
             if (rawList == null)
                 return;
@@ -69,13 +73,8 @@ public class PlayerInfoModule extends PacketAdapter {
             boolean modified = false;
             for (PlayerInfoData infoData : new ArrayList<>(infoDataList)) {
 
-                if (infoData == null) {
-
-                    infoDataList.remove(infoData);
-                    modified = true;
+                if (infoData == null)
                     continue;
-
-                }
 
                 UUID uuid = extractUUID(infoData);
                 if (uuid == null)

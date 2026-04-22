@@ -140,6 +140,9 @@ public class VanishIndication extends Feature {
 
                         try {
 
+                            if (VanishIndication.this.plugin.getVanishStateMgr().getOnlineVanishedPlayers().isEmpty())
+                                return;
+
                             // multiple events share same packet object
                             event.setPacket(event.getPacket().shallowClone());
                             List<PlayerInfoData> infoDataList = new ArrayList<>(
