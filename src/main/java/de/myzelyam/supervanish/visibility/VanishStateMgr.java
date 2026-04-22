@@ -47,6 +47,16 @@ public class VanishStateMgr {
 
     }
 
+    /**
+     * Returns whether this UUID is currently persisted in Vanish-OG's backing state
+     * store ({@code data.yml}) as vanished.
+     */
+    public boolean hasPersistedVanishEntry(final UUID uuid) {
+
+        return vanishedPlayers.contains(uuid);
+
+    }
+
     public final boolean isVanished(final Player player) {
 
         return isVanished(player.getUniqueId());

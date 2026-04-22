@@ -40,7 +40,16 @@ public abstract class PlayerHider implements Listener {
 
     public boolean isHidden(Player player, Player viewer) {
 
-        return !player.getUniqueId().equals(viewer.getUniqueId()) && playerHiddenFromPlayersMap.containsKey(player)
+        if (player.getUniqueId().equals(viewer.getUniqueId()))
+            return false;
+        if (!plugin.isPersistedVanished(player)) {
+
+            playerHiddenFromPlayersMap.remove(player);
+            return false;
+
+        }
+
+        return playerHiddenFromPlayersMap.containsKey(player)
                 && playerHiddenFromPlayersMap.get(player).contains(viewer);
 
     }
@@ -48,6 +57,8 @@ public abstract class PlayerHider implements Listener {
     public boolean isHidden(UUID playerUUID, Player viewer) {
 
         if (playerUUID.equals(viewer.getUniqueId()))
+            return false;
+        if (!plugin.isPersistedVanished(playerUUID))
             return false;
         for (Player p : playerHiddenFromPlayersMap.keySet()) {
 
@@ -71,6 +82,13 @@ public abstract class PlayerHider implements Listener {
 
             if (p.getName().equalsIgnoreCase(playerName)) {
 
+                if (!plugin.isPersistedVanished(p)) {
+
+                    playerHiddenFromPlayersMap.remove(p);
+                    return false;
+
+                }
+
                 return playerHiddenFromPlayersMap.get(p).contains(viewer);
 
             }
@@ -86,6 +104,8 @@ public abstract class PlayerHider implements Listener {
      */
     public boolean setHidden(Player player, Player viewer, boolean hidden) {
 
+        if (hidden && !plugin.isPersistedVanished(player))
+            return false;
         if (!playerHiddenFromPlayersMap.containsKey(player))
             playerHiddenFromPlayersMap.put(player, new HashSet<>());
         if (viewer == player)

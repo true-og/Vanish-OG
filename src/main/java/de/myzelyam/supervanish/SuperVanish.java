@@ -11,6 +11,7 @@ package de.myzelyam.supervanish;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.apache.commons.lang3.StringUtils;
@@ -387,6 +388,12 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
     public boolean canSee(Player viewer, Player viewed) {
 
+        if (!isPersistedVanished(viewed)) {
+
+            return true;
+
+        }
+
         return !visibilityChanger.getHider().isHidden(viewed, viewer);
 
     }
@@ -476,8 +483,20 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
         }
 
-        boolean hidden = vanishStateMgr.isVanished(subject.getUniqueId()) && !hasPermissionToSee(viewer, subject);
+        boolean hidden = isPersistedVanished(subject) && !hasPermissionToSee(viewer, subject);
         visibilityChanger.getHider().setHidden(subject, viewer, hidden);
+
+    }
+
+    public boolean isPersistedVanished(Player player) {
+
+        return isPersistedVanished(player.getUniqueId());
+
+    }
+
+    public boolean isPersistedVanished(UUID uuid) {
+
+        return vanishStateMgr != null && vanishStateMgr.hasPersistedVanishEntry(uuid);
 
     }
 
