@@ -180,4 +180,22 @@ public class PluginHookMgr implements Listener {
 
     }
 
+    public void onCleanup() {
+
+        for (PluginHook hook : activeHooks) {
+
+            try {
+
+                hook.onCleanup();
+
+            } catch (Exception e) {
+
+                plugin.logException(e);
+
+            }
+
+        }
+
+    }
+
 }

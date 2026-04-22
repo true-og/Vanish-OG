@@ -89,6 +89,44 @@ public class EssentialsHook extends PluginHook {
 
     }
 
+    /**
+     * Essentials tracks its own vanish list in {@code getVanishedPlayersNew()} and
+     * re-hides its members from every new joiner via the deprecated
+     * {@code hidePlayer(Player)} API (see EssentialsPlayerListener#onPlayerJoin).
+     * That deprecated call parks a {@code null} plugin ref in CraftPlayer's
+     * invertedVisibilityEntities map, which Vanish-OG's plugin-scoped
+     * {@code showPlayer(Plugin, Player)} cannot clear. So {@code /sv cleanup} must
+     * drive Essentials' state back to "not vanished" on every online user — that's
+     * the only call that removes the entry from Essentials' list *and* fires the
+     * deprecated {@code showPlayer(Player)} that drops the null ref.
+     */
+    @Override
+    public void onCleanup() {
+
+        if (essentials == null)
+            return;
+        for (Player online : Bukkit.getOnlinePlayers()) {
+
+            try {
+
+                User user = essentials.getUser(online);
+                if (user == null)
+                    continue;
+                if (user.isVanished())
+                    user.setVanished(false);
+                if (user.isHidden())
+                    user.setHidden(false);
+
+            } catch (Exception e) {
+
+                superVanish.logException(e);
+
+            }
+
+        }
+
+    }
+
     @EventHandler(priority = EventPriority.LOW)
     public void onJoin(PlayerJoinEvent e) {
 

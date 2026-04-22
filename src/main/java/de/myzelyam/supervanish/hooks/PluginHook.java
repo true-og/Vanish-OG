@@ -36,6 +36,16 @@ public abstract class PluginHook implements Listener {
 
     }
 
+    /**
+     * Called by {@code /sv cleanup} so hooks can drop any hide state they are
+     * responsible for. Default is a no-op — hooks that keep their own vanish
+     * tracking (Essentials' {@code getVanishedPlayersNew} + deprecated
+     * {@code hidePlayer(Player)} calls) override this to reset it.
+     */
+    public void onCleanup() {
+
+    }
+
     public Plugin getPlugin() {
 
         return plugin;

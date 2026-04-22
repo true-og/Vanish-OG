@@ -424,6 +424,20 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
     public void forceShowAllPlayers() {
 
+        forceShowAllPlayers(false);
+
+    }
+
+    /**
+     * @param aggressive when true, also clears legacy (null-plugin-ref) hide state
+     *                   left behind by plugins using the deprecated
+     *                   {@code Player#hidePlayer(Player)} API (Essentials is the
+     *                   common culprit). Only used by {@code /sv cleanup}, which is
+     *                   the documented escape hatch — normal reload/disable paths
+     *                   must not touch other plugins' hide state.
+     */
+    public void forceShowAllPlayers(boolean aggressive) {
+
         if (visibilityChanger == null) {
 
             return;
@@ -440,7 +454,15 @@ public class SuperVanish extends JavaPlugin implements SuperVanishPlugin {
 
                 }
 
-                BukkitPlayerHidingUtil.showPlayer(subject, viewer, this);
+                if (aggressive) {
+
+                    BukkitPlayerHidingUtil.showPlayerAggressive(subject, viewer, this);
+
+                } else {
+
+                    BukkitPlayerHidingUtil.showPlayer(subject, viewer, this);
+
+                }
 
             }
 
