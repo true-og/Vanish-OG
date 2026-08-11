@@ -48,9 +48,8 @@ repositories {
     maven { url = uri("https://repo.purpurmc.org/snapshots") } // Import the PurpurMC Maven Repository.
     maven { url = uri("https://repo.papermc.io/repository/maven-public/") } // PaperMC.
     maven { url = uri("https://repo.essentialsx.net/releases/") } // EssentialsX.
-    maven { url = uri("https://jitpack.io") } // JitPack (VaultAPI, TrailGUI, OpenInv).
+    maven { url = uri("https://jitpack.io") } // JitPack (VaultAPI, TrailGUI, OpenInv, Dynmap).
     maven { url = uri("https://repo.citizensnpcs.co/") } // Citizens.
-    maven { url = uri("https://repo.mikeprimm.com/") } // Dynmap.
     maven { url = uri("https://libraries.minecraft.net") } // Mojang Brigadier.
 }
 
@@ -82,8 +81,8 @@ dependencies {
     // TrailGUI (via JitPack).
     compileOnly("com.github.SinnDevelopment:TrailGUI:37659dda03")
 
-    // Dynmap API.
-    compileOnly("us.dynmap:dynmap-api:3.1")
+    // Dynmap API (via JitPack).
+    compileOnly("com.github.webbukkit:dynmap-api:v3.1")
 
     // Import MiniPlaceholders API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
