@@ -81,9 +81,6 @@ dependencies {
     // TrailGUI (via JitPack).
     compileOnly("com.github.SinnDevelopment:TrailGUI:37659dda03")
 
-    // Dynmap API (via JitPack).
-    compileOnly("com.github.webbukkit:dynmap-api:v3.1")
-
     // Import MiniPlaceholders API.
     compileOnly("io.github.miniplaceholders:miniplaceholders-api:2.2.3")
 

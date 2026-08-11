@@ -32,7 +32,6 @@ public class PluginHookMgr implements Listener {
             put("Essentials", EssentialsHook.class);
             put("Citizens", CitizensHook.class);
             put("Utilities-OG", MiniPlaceholdersHook.class);
-            put("dynmap", DynmapHook.class);
             put("TrailGUI", TrailGUIHook.class);
             put("OpenInv", OpenInvHook.class);
             put("TAB-OG", TabOGHook.class);
