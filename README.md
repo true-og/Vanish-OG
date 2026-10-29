@@ -10,7 +10,7 @@ Built for **Purpur 1.19.4**. Clients from **Minecraft 1.8 through 1.21.11** can 
 - **Spectator indication works on 1.19.4 again.** `MarkVanishedPlayersAsSpectators` now uses the native 1.19.4 player info update packet, so staff who can see vanished players still get the dark-gray/head-only tab list cue across Via-served 1.8-1.21.11 clients.
 - **Silent chest opening works on 1.19.4 again.** Peeking into containers looks completely invisible to other players if vanished.
 - **All connected clients see the same thing.** Whether someone joins from 1.8 or the latest 1.21.11 release through ViaSuite, vanish behaves identically.
-- **[Chat-OG](https://github.com/true-og/Chat-OG) owns announcement visibility.** Vanish-OG no longer rewrites join/quit, death, or advancement messages and no longer emits fake join/quit broadcasts on vanish toggles. Chat-OG is responsible for hiding vanished-player activity from Discord-facing announcements.
+- **[Chat-OG](https://git.trueog.net/trueog/Chat-OG) owns announcement visibility.** Vanish-OG no longer rewrites join/quit, death, or advancement messages and no longer emits fake join/quit broadcasts on vanish toggles. Chat-OG is responsible for hiding vanished-player activity from Discord-facing announcements.
 - **OpenInv support.** If installed, Vanish-OG hands off chest viewing to OpenInv so staff never enter spectator mode and can't get stuck there after a crash.
 - **MiniPlaceholders support** (via Utilities-OG) for use in chat, tab, and hologram plugins.
 - **Safer chest peeking.** Staff no longer occasionally fall through the floor when finishing a peek. Pair with [WGamemode](https://github.com/true-og/WGamemode) to auto-restore gamemodes after crashes if OpenInv is not installed.
@@ -21,7 +21,7 @@ Built for **Purpur 1.19.4**. Clients from **Minecraft 1.8 through 1.21.11** can 
 
 ### Chat-OG handles some events that used to be handled by SuperVanish
 
-If your stack includes [Chat-OG](https://github.com/true-og/Chat-OG), think of the split like this:
+If your stack includes [Chat-OG](https://git.trueog.net/trueog/Chat-OG), think of the split like this:
 
 - Vanish-OG manages vanish state, player/entity visibility, tab list hiding, spectator indication, and silent chest behavior.
 - Chat-OG manages whether vanished-player join/quit, kick, advancement, death, and Discord bridge announcements are surfaced.
@@ -159,4 +159,4 @@ fun onPlayerHide(event: PlayerHideEvent) {
 
 ## Reporting issues
 
-Open an issue on the [Vanish-OG GitHub repository](https://github.com/true-og/Vanish-OG/issues).
+Open an issue on the [Vanish-OG Gitea repository](https://git.trueog.net/trueog/Vanish-OG/issues).
